@@ -1,0 +1,95 @@
+<form id="toolbar" class="form">
+    <table width="100%">
+        <tr>
+            <td align="right">
+                {$Think.lang.module}：<input name="module" class="easyui-combobox" value="" id="module" style="width: 100px;">
+                {$Think.lang.controller}：<input name="controller" class="easyui-combobox" data-options="disabled:true" id="controller" value="" style="width:180px;">
+                {$Think.lang.method}：<input name="method" class="easyui-combobox" data-options="disabled:true" id="method" value="" style="width:180px;">
+                <input name="keyword" class="easyui-textbox" data-options="buttonText:'{$Think.lang.search}',prompt:'{$Think.lang.keyword}',buttonIcon:'icon-search', onClickButton: onSearch" style="width:250px;">
+            </td>
+        </tr>
+    </table>
+</form>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'user_name',width:60">{$Think.lang.user_name}</th>
+        <th data-options="field:'real_name',width:60">{$Think.lang.real_name}</th>
+        <th data-options="field:'module_name',width:60">{$Think.lang.module}</th>
+        <th data-options="field:'controller_name',width:60">{$Think.lang.controller}</th>
+        <th data-options="field:'action_name',width:60">{$Think.lang.method}</th>
+        <th data-options="field:'note',width:200">{$Think.lang.recode_log}</th>
+        <th data-options="field:'create_time',width:90, sortable:true">{$Think.lang.operate_time}</th>
+    </tr>
+    </thead>
+</table>
+<div id="tips"></div>
+<script type="text/javascript">
+    var grid = $('#grid');
+    $(function () {
+        easyui.datagrid({
+            element:grid,
+            hideButtons: true,
+        });
+        getSerach();
+    });
+
+    function getSerach(level,params) {
+        level = empty(level) ? 0 : level;
+        var type = ['module', 'controller', 'method'];
+        level = level > type.length ? type.length : level;
+        var element = $('#' + type[level]);
+        var param = {
+            type: type[level]
+        };
+        if(!empty(params)){
+            param = $.extend(params,param);
+        }
+        var options = {};
+        if(level > 0){
+            options.disabled = false;
+        }
+        options.url = "{:url('menu/getSearchData')}";
+        options.queryParams = param;
+        options.valueField = 'value';
+        options.textField = 'text';
+        options.onSelect = function (result) {
+            var key = 0;
+            switch (type[level]){
+                case 'module':
+                    key = 1;
+                    param.module = result.value;
+                    param.controller = '';
+                    delete param.controller;
+                    break;
+                case 'controller':
+                    key = 2;
+                    param.controller = result.value;
+                    break;
+                case 'method':
+                    return;
+            }
+            if (!empty(result.value) ) {
+                getSerach(key,param);
+            }else{
+                for (var i in type){
+                    if(i >= key){
+                        $('#'+type[i]).combobox({
+                            url:null,
+                            disabled:true,
+                        })
+                    }
+                }
+            }
+        };
+        element.combobox(options);
+    }
+
+
+    function onSearch() {
+        var query = $('#toolbar').form('getData');
+        grid.datagrid({
+            queryParams: query
+        });
+    }
+</script> 

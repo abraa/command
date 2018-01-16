@@ -1,0 +1,62 @@
+<form id="form" data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+        <table>
+            <tr>
+                <th>{$Think.lang.config_code}：</th>
+                <td>
+                    <input name="name" class="easyui-textbox" data-options="required:true" size="35">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.config_name}：</th>
+                <td>
+                    <input name="title" class="easyui-textbox" data-options="required:true"size="35">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.order}：</th>
+                <td>
+                    <input type="text" name="orderby" class="easyui-numberspinner" data-options="min:0,max:1000,required:true" value="50" size="25">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.config_type}：</th>
+                <td>
+                    <select name="type" class="easyui-combobox" style="width: 100px;">
+                        {volist name="typeList" id="type"}
+                        <option value="{$key}">{$type}</option>
+                        {/volist}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.config_group}：</th>
+                <td>
+                    <select name="group" class="easyui-combobox" style="width: 100px;">
+                        <option value="0">{$Think.lang.config_not_group}</option>
+                        {volist name="groupList" id="type"}
+                        <option value="{$key}">{$type}</option>
+                        {/volist}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.extra}：</th>
+                <td>
+                    <input name="extra" class="easyui-textbox" data-options="multiline:true,prompt:'{$Think.lang.extra_tip}'"style="width:300px;height:50px">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.description}：</th>
+                <td>
+                    <input name="remark" class="easyui-textbox" data-options="multiline:true"style="width:300px;height:50px">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" name="id">
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+</form>

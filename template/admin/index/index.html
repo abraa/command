@@ -1,0 +1,231 @@
+{include file='public/header'}
+<div id="layout" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north',border:false,split:false">
+        <div class="header">
+            <div class="logo"><i class="fa fa-drupal"></i> {$Think.lang.system_name}</div>
+            <ul class="nav left" id="nav">
+                <li><a href="javascript:void(0)" id="resize">&nbsp;<i class="fa fa-bars"></i>&nbsp;</a></li>
+            </ul>
+            <ul class="nav right">
+                <li><a href="{:url('/')}" class="fa fa-home" target="_blank"></a></li>
+                <li><a href="javascript:;" onclick="information()" class="fa fa-user"></a></li>
+                <li><a href="{:url('index/logout')}" class="fa fa-power-off nav-logout"></a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="menu" data-options="region:'west',border:false,split:false" class="west">
+        <h2 id="nav-title"></h2>
+        <ul id="nav-menu"></ul>
+    </div>
+    <div data-options="region:'center',border:false,split:false" class="borderTop">
+        <div id="tabs">
+            <div title="{$Think.lang.work_panel}" class="container"></div>
+        </div>
+    </div>
+</div>
+<div id="tabsMenu" class="easyui-menu" data-options="onClick:onTabsHandler">
+    <div data-options="name:'close', iconCls:'icon-no'">关闭当前标签页</div>
+    <div data-options="name:'closeAll', iconCls:'icon-no'">关闭所有标签页</div>
+    <div data-options="name:'reload',iconCls:'icon-save'">刷新</div>
+</div>
+<script type="text/javascript">
+    var tabs, layout, menu;
+    $(document.body).ready(function () {
+        layout = $('#layout');
+        tabs = $('#tabs');
+        menu = $('#menu');
+        initMenu();
+        $('#resize').click(function () {
+            if (menu.css('display') == 'none') {
+                layout.layout('expand', 'west');
+            } else {
+                layout.layout('collapse', 'west');
+            }
+        });
+
+
+        tabs.tabs({
+            fit: true,
+            border: false,
+            tabPosition: 'bottom',
+            tabHeight: '35',
+            plain: true,
+            onContextMenu: function (e, title, index) {
+                e.preventDefault();
+                $("#tabsMenu").menu('show', {
+                    left: e.pageX,
+                    top: e.pageY
+                })
+            }
+        })
+    });
+
+
+    function information() {
+        var opts = {
+            href: '{:url("admin/information")}',
+            height:540,
+            title:'{$Think.lang.manage_info}'
+        };
+        easyui.dialog(opts);
+    }
+
+
+    /**
+     * 初始化菜单
+     */
+    function initMenu() {
+        var url = "{:url('menu')}";
+        $.get(url, function (result) {
+            if (result.length > 0) {
+                for (var i in result) {
+                    var data = result[i];
+                    var li = $('<li></li>');
+                    var a = $('<a></a>');
+                    a.attr('item', i);
+                    a.html('<i class="fa ' + data.icon + '"></i>' + ' ' + data.text);
+                    a.click(function () {
+                        if (menu.css('display') == 'none') {
+                            layout.layout('expand', 'west');
+                        }
+                        $('#nav > li > a').removeClass('active');
+                        $(this).addClass('active');
+                        var item = $(this).attr('item');
+                        $('#nav-title').html($(this).text());
+                        $('#nav-menu').empty();
+                        var child = result[item].children;
+                        if (child.length > 0) {
+                            for (var i in child) {
+                                var children = child[i];
+                                var li = $('<li></li>');
+                                var a = $('<a></a>');
+                                a.attr('url', children.href);
+                                a.html('<i class="fa ' + children.icon + '"></i>' + ' ' + children.text);
+                                a.appendTo(li);
+                                $('#nav-menu').append(li);
+                            }
+                            bindClick()
+                        }
+                    }).appendTo(li);
+                    $('#nav').append(li);
+                }
+                $('#nav > li > a').eq(1).click();
+            }
+        })
+    }
+
+
+    function bindClick() {
+        var menu = $('#nav-menu >li > a');
+        menu.each(function () {
+            $(this).bind('click', function () {
+                menu.removeClass('active');
+                $(this).addClass('active');
+                var tabName = $.trim($(this).text());
+                var tabHref = $(this).attr('url');
+                openTab(tabs, tabName, tabHref, true);
+            })
+        });
+    }
+
+
+    function onTabsHandler(item) {
+        switch (item.name) {
+            case 'reload':
+                reFlashTab();
+                break;
+            case 'close':
+            case 'closeAll':
+                closeTab(null, item.name);
+                break;
+        }
+    }
+
+    function reFlashTab(tabElement) {
+        tabElement = tabElement || tabs;
+        var tab = tabElement.tabs('getSelected');
+        if (tab.find('iframe').length > 0) {
+            tab.find('iframe').attr('src', tab.find('iframe').attr('src'));
+        } else {
+            tab.panel('refresh');
+        }
+    }
+
+    function closeTab(tabElement, closeType) {
+        tabElement = tabElement || tabs;
+        switch (closeType) {
+            case 'closeAll':
+                var tab = tabElement.tabs('tabs');
+                var length = tab.length;
+                for (var i = 0; i < length; i++) {
+                    var oneTab = tab[1];
+                    if (empty(oneTab)) {
+                        break;
+                    }
+                    removeTabFrame(oneTab);
+                    var title = oneTab.panel('options').tab.text();
+                    tabElement.tabs("close", title);
+                }
+                break;
+            default:
+                var oneTab = tabElement.tabs('getSelected');
+                var index = tabElement.tabs('getTabIndex', oneTab);
+                if (index == 0) {
+                    break;
+                }
+                removeTabFrame(oneTab);
+                var title = oneTab.panel('options').tab.text();
+                tabElement.tabs("close", title);
+                break;
+        }
+    }
+
+
+    function removeTabFrame(tab) {
+        var frame = $('iframe', tab);
+        if (frame.length > 0) {
+            frame[0].contentWindow.document.write('');
+            frame[0].contentWindow.close();
+            frame.remove();
+            if(/msie/.test(navigator.userAgent.toLowerCase())){
+                CollectGarbage();
+            }
+        }
+    }
+
+    /**
+     * 创建新标签页
+     * @param tabElement
+     * @param tabName
+     * @param tabHref
+     * @param iframe
+     */
+    function openTab(tabElement, tabName, tabHref, iframe) {
+        tabElement = tabElement || tabs;
+        if (tabElement.tabs('exists', tabName)) {
+            tabElement.tabs('select', tabName);
+            return;
+        }
+
+        var options = {
+            title: tabName,
+            border: false,
+            closable: true,
+            fit: true,
+            tools: [{
+                iconCls: 'icon-mini-refresh',
+                handler: function () {
+                    reFlashTab(tabElement);
+                }
+            }]
+        };
+
+        if (iframe) {
+            options.content = '<iframe src="' + tabHref + '" width="100%" height="100%" frameborder="0"></iframe>'
+        } else {
+            options.href = tabHref;
+        }
+        tabElement.tabs('add', options);
+    }
+</script>
+{include file='public/footer'}

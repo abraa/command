@@ -1,0 +1,32 @@
+<div class="datagrid-toolbar form">
+    <table width="100%">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" plain="true"><i class="fa fa-cogs"></i> {$Think.lang.power_list}</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<ul id="grid"></ul>
+<script type="text/javascript">
+    var grid = $("#grid");
+
+    function setData(node) {
+        tree({
+            element:grid,
+            url: "{:url('menu/index')}",
+            queryParams:node
+        });
+    }
+
+    function onReturn() {
+        var rows = grid.tree('getChecked');
+        var items = [];
+        if (rows) {
+            for (var i = 0; i < rows.length; i++) {
+                items.push(rows[i].id);
+            }
+        }
+        return items.join(',');
+    }
+</script>

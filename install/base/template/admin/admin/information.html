@@ -1,0 +1,47 @@
+<div class="container" style="padding-left: 0px; padding-right: 0px;">
+    <div class="easyui-panel" style="border:none">
+        <table class="form" width="100%">
+            <tr>
+                <th width="15%">{$Think.lang.user_name}：</th>
+                <td>{$info.user_name}</td>
+                <th width="15%">{$Think.lang.real_name}：</th>
+                <td>{$info.real_name}</td>
+            </tr>
+
+            <tr>
+                <th width="15%">{$Think.lang.group_name}：</th>
+                <td>{$info.group_name}</td>
+                <th width="15%">{$Think.lang.role_name}：</th>
+                <td>{$info.role_name}</td>
+            </tr>
+            <tr>
+                <th width="15%">{$Think.lang.sex}：</th>
+                <td>{$info['sex'] == 1 ? lang('male') : lang('female')}</td>
+            </tr>
+            <tr>
+                <th width="20%">{$Think.lang.last_login_time}：</th>
+                <td>{$info.last_login_time}</td>
+            </tr>
+            <tr>
+                <th width="20%">{$Think.lang.last_login_ip}：</th>
+                <td>{$info.last_login_ip}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="easyui-panel" title="{$Think.lang.modify_password}" style="border-left: 0px;border-right: 0px;border-top: none;">
+        <form id="master" data-url="{:url('information')}" method="post" class="form">
+            <table width="100%">
+                <tr>
+                    <th width="20%">{$Think.lang.password}：</th>
+                    <td><input type="password" name="password" class="easyui-textbox" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th width="20%">{$Think.lang.confirm_password}：</th>
+                    <td>
+                        <input type="password" name="password_confirm" class="easyui-textbox" data-options="required:true">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

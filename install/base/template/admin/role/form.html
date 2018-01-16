@@ -1,0 +1,36 @@
+<form data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+        <table>
+            <tr>
+                <th>{$Think.lang.role_name}：</th>
+                <td><input name="text" class="easyui-textbox" size="25" data-options="required:true"></td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.parent_role}：</th>
+                <td>
+                    <input class="easyui-combotree" name="pid" data-options="url:'{:url('index?type=parent')}'" style="width:150px;">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.locked}：</th>
+                <td>
+                    <input type="radio" name="locked" value="1">{$Think.lang.yes}
+                    <input type="radio" name="locked" value="0">{$Think.lang.no}
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.order}：</th>
+                <td>
+                    <input type="text" name="orderby" class="easyui-numberspinner" data-options="min:0,max:1000,required:true" value="50">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.remark}：</th>
+                <td>
+                    <input type="text" name="remark" size="35" class="easyui-textbox" >
+                    <input type="hidden" name="id" value="0">
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+</form>

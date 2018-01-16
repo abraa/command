@@ -1,0 +1,76 @@
+<div id="toolbar">
+    <table class="form">
+        <tr>
+            <td width="100%">
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onOpen({})">{$Think.lang.add}</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'text',width:120">{$Think.lang.group_name}</th>
+        <th data-options="field:'locked',width:50,align:'center', formatter: function(value){
+        return value == '1' ? '<font color=red>{$Think.lang.yes}</font>' : '{$Think.lang.no}';
+    }">{$Think.lang.locked}
+        </th>
+        <th data-options="field:'remark',width:90">{$Think.lang.remark}</th>
+        <th data-options="field:'orderby',width:30">{$Think.lang.order}</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="leftMenu" class="easyui-menu" data-options="onClick:onMenu">
+    <div data-options="name:'delete', iconCls:'icon-no'">{$Think.lang.delete}</div>
+    <div data-options="name:'reload',iconCls:'icon-save'">{$Think.lang.reload}</div>
+</div>
+<script type="text/javascript">
+    var grid = $("#grid");
+    $(function () {
+        easyui.treegrid({
+            element: grid,
+            onContextMenu: function (e, row) {
+                e.preventDefault();
+                try {
+                    rowId = row.id;
+                    $('#leftMenu').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                } catch (e) {
+                }
+            },
+            onDblClickRow: function (row) {
+                onOpen(row);
+            }
+        });
+    })
+
+    function onOpen(row) {
+        var opts = {
+            href: '{:url("form")}',
+            width: 500,
+            data: row,
+            handler: function (result) {
+                grid.treegrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+
+    function onMenu(item) {
+        switch (item.name) {
+            case 'reload':
+                grid.treegrid('reload');
+                break;
+            case 'delete':
+                if (rowId) {
+                    easyui.doAjax('{:url("delete")}', {id: rowId}, function () {
+                        grid.treegrid('reload');
+                    });
+                }
+        }
+
+    }
+</script>

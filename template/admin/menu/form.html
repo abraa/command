@@ -1,0 +1,77 @@
+<form data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+    <table>
+        <tr>
+            <th>{$Think.lang.parent}：</th>
+            <td>
+                <input class="easyui-combotree" name="pid" data-options="url:'{:url('index?type=parent')}'">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.menu}{$Think.lang.text}：</th>
+            <td><input name="text" class="easyui-textbox"  data-options="required:true"></td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.module}：</th>
+            <td>
+                <input name="module" class="easyui-textbox"  data-options="required:true">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.controller}：</th>
+            <td>
+                <input name="controller" class="easyui-textbox" data-options="required:true">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.method}：</th>
+            <td>
+                <input name="method" class="easyui-textbox"   data-options="required:true">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.relation_method}：</th>
+            <td>
+                <input name="other_method" class="easyui-textbox"  data-options="prompt:'{$Think.lang.method_tip}'">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.icon}：</th>
+            <td>
+                <input name="icon" class="easyui-textbox" data-options="buttonText:'选择',buttonIcon:'icon-search', onClickButton: onSearch" size="35">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.order}：</th>
+            <td>
+                <input name="orderby" class="easyui-numberspinner" data-options="min:0,max:1000,required:true" value="50">
+            </td>
+        </tr>
+        <tr>
+            <th>{$Think.lang.display}：</th>
+            <td>
+                <input type="radio" name="display" value="1">{$Think.lang.yes}
+                <input type="radio" name="display" value="0">{$Think.lang.no}
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="id" value="0">
+    </fieldset>
+</form>
+<script type="text/javascript">
+    function onSearch() {
+        var self = $(this);
+        var opts = {
+            href: '{:url("icon")}',
+            width: 500,
+            height: 500,
+            onDestroy: function(result){
+                if(typeof top.select_icon != 'undefined') {
+                   self.textbox('setValue', top.select_icon);
+                }
+            },
+            buttons:null
+        };
+        top.dgWidows = top.easyui.dialog(opts);
+    }
+</script>

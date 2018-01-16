@@ -1,0 +1,136 @@
+<div id="toolbar" class="form">
+    <table>
+        <tr>
+            <td width="100%">
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onOpen()">{$Think.lang.add}</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" iconCls="fa fa-unlock" plain="true" onclick="onLock(0)">{$Think.lang.allow_login}</a>
+                <a class="easyui-linkbutton" iconCls="icon-lock" plain="true" onclick="onLock(1)">{$Think.lang.disable_login}</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" iconCls="icon-print" plain="true" onclick="onLog()">{$Think.lang.view_log}</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" iconCls="icon-man" plain="true" onclick="onAssign()">{$Think.lang.dealing_power}</a>
+            </td>
+            <td>
+                <input name="keyword" class="easyui-textbox" data-options="buttonText:' {$Think.lang.search} ',prompt:'{$Think.lang.keyword}',buttonIcon:'icon-search',onClickButton: onSearch" style="width:250px;">
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'user_name',width:120, sortable:true">{$Think.lang.user_name}</th>
+        <th data-options="field:'real_name',width:120">{$Think.lang.real_name}</th>
+        <th data-options="field:'group_name',width:120">{$Think.lang.belong_group_name}</th>
+        <th data-options="field:'role_name',width:120">{$Think.lang.belong_role_name}</th>
+        <th data-options="field:'is_open',width:50,formatter:function(value){
+    return value == '1'  ? '<font color=red>{$Think.lang.yes}</font>' : '{$Think.lang.no}';}">{$Think.lang.open_power}
+        </th>
+        <th data-options="field:'sex',width:50,formatter:function(value){
+    return value == '1'  ? '{$Think.lang.male}' : '{$Think.lang.female}';}">{$Think.lang.sex}
+        </th>
+        <th data-options="field:'locked',width:60, align:'center',formatter:function(value){
+    return value==1?'<font color=red>{$Think.lang.yes}</font>':'{$Think.lang.no}';}">{$Think.lang.disable_login}
+        </th>
+        <th data-options="field:'create_time',width:120, sortable:true">{$Think.lang.add_time}</th>
+        <th data-options="field:'update_time',width:120, sortable:true">{$Think.lang.edit_time}</th>
+    </tr>
+    </thead>
+</table>
+<script type="text/javascript">
+    var grid = $('#grid');
+    $(function () {
+        easyui.datagrid({
+            element: grid,
+            onDblClickRow: function (index, node) {
+                onOpen(node);
+            },
+            onSelect: function (index, node) {
+                grid.datagrid('clearChecked');
+                grid.datagrid('checkRow', index);
+            }
+        })
+    })
+
+    function onOpen(node) {
+        var opts = {
+            href: '{:url("form")}',
+            width: 600,
+            data: node,
+            modal: false,
+            handler: function (result) {
+                grid.datagrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+
+    function onLock(locked) {
+        var rows = grid.datagrid('getChecked');
+        var items = [];
+        for (var i in rows) {
+            items.push(rows[i].user_id);
+        }
+        items = items.join(',');
+        if (empty(items)) {
+            easyui.alert('{$Think.lang.locked_tip}');
+            return false;
+        }
+        var data = {
+            user_id: items,
+            locked: locked,
+        };
+        easyui.doAjax('{:url("lock")}', data, function (result) {
+            try {
+                if (result.code) {
+                    grid.datagrid('reload');
+                }
+            } catch (e) {
+            }
+        })
+    }
+
+    function onLog() {
+        var row = grid.datagrid('getSelected');
+        var url = '{:url("log")}';
+        if (!empty(row)) {
+            url = http_build_query(url,{user_id:row.user_id})
+        }
+        var opts = {
+            href:url,
+            title:'{$Think.lang.view_log}',
+            width:'1200',
+            height:'700',
+            buttons:[]
+        };
+        easyui.dialog(opts);
+    }
+
+
+    function onSearch() {
+        grid.datagrid({
+            queryParams: {
+                keyword: $(this).val()
+            }
+        });
+    }
+
+    function onAssign() {
+        var row = grid.datagrid('getSelected');
+        if (!row) {
+            easyui.alert('{$Think.lang.locked_tip}');
+            return false;
+        }
+        var opts = {
+            href: '{:url("role/power")}',
+            width: 400,
+            data: {userId: row.user_id},
+            handler: function (result) {
+                easyui.doAjax(opts.href, {menu_list: result, user_id: row.user_id});
+            }
+        };
+        shadow.open(opts);
+    }
+</script>

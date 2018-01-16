@@ -1,0 +1,81 @@
+<form id="master" data-url="{:url('save')}" method="post">
+    <fieldset class="fixed">
+        <table class="form container">
+            <tr>
+                <th>{$Think.lang.belong_group_name}：</th>
+                <td>
+                    <input class="easyui-combotree" name="group_id" method="get" data-options="url:'{:url('group/index?type=select')}'" style="width:150px;">
+                </td>
+                <th>{$Think.lang.belong_role_name}：</th>
+                <td>
+                    <input class="easyui-combotree" name="role_id" method="get" data-options="url:'{:url('role/index?type=select')}'" style="width:150px;">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.user_name}：</th>
+                <td>
+                    <input name="user_name" id="user_name" class="easyui-textbox" data-options="required:true">
+                </td>
+                <th>{$Think.lang.real_name}：</th>
+                <td>
+                    <input name="real_name" class="easyui-textbox" data-options="required:true">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.password}：</th>
+                <td>
+                    <input type="password" id="password" name="password" class="easyui-textbox">
+                </td>
+                <th>{$Think.lang.confirm_password}：</th>
+                <td>
+                    <input type="password" id="password_confirm" name="password_confirm" class="easyui-textbox">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.locked}：</th>
+                <td>
+                    <select name="locked" class="easyui-combobox" style="width: 60px;">
+                        <option value="0">{$Think.lang.no}</option>
+                        <option value="1">{$Think.lang.yes}</option>
+                    </select>
+                </td>
+                <th>{$Think.lang.sex}：</th>
+                <td>
+                    <select name="sex" class="easyui-combobox" style="width: 60px;">
+                        <option value="1">{$Think.lang.male}</option>
+                        <option value="2">{$Think.lang.female}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.open_power}：</th>
+                <td>
+                    <select name="is_open" class="easyui-combobox" style="width: 60px;">
+                        <option value="0">{$Think.lang.no}</option>
+                        <option value="1">{$Think.lang.yes}</option>
+                    </select>
+                </td>
+                <th></th>
+                <td></td>
+            </tr>
+        </table>
+    </fieldset>
+    <input type="hidden" name="user_id">
+</form>
+<script type="text/javascript">
+    function setData(data) {
+        if (!empty(data.user_name)) {
+            $('#user_name').textbox({
+                readonly: true
+            });
+        }
+        if(empty(data)){
+            $('#password').textbox({
+                required: true
+            });
+            $('#password_confirm').textbox({
+                required: true
+            });
+        }
+    }
+</script>

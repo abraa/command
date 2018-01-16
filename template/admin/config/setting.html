@@ -1,0 +1,83 @@
+<div class="datagrid-toolbar form">
+    <table width="100%">
+        <tr>
+            <td>
+                <!--<a class="easyui-linkbutton" plain="true"><i class="fa fa-cog"></i> {$Think.lang.system_config}</a>-->
+                <!--<a class="datagrid-btn-separator"></a>-->
+                <a class="easyui-linkbutton" iconCls="fa fa-list" plain="true" onclick="onOpen()">{$Think.lang.system_variable}</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<form data-url="{:url('setting')}" method="post" class="form container">
+    <div class="easyui-tabs" data-options="plain:true, tabHeight:'35'">
+        {volist name="groupList" id="group"}
+            {notempty name="list[$key]"}
+                <div title="{$group}{$Think.lang.deploy}">
+                    <table>
+                        {volist name="list[$key]" id="config"}
+                            <tr>
+                                <th>{$config.title}：</th>
+                                <td>
+                                    {switch name="config.type"}
+                                        {case value="1"}
+                                        <input type="text" class="easyui-numberbox" name="config[{$config.name}]" value="{$config.value}" style="width:300px;height:30px">
+                                        {/case}
+                                        {case value="2"}
+                                        <input type="text" class="easyui-textbox" name="config[{$config.name}]" value="{$config.value}" style="width:300px;height:30px">
+                                        {/case}
+                                        {case value="3"}
+                                        <input type="text" class="easyui-textbox" name="config[{$config.name}]" value="{$config.value}" data-options="multiline:true" style="width:300px;height:100px">
+                                        {/case}
+                                        {case value="4"}
+                                            <select name="config[{$config.name}]" class="easyui-combobox" style="min-width: 100px;">
+                                                 {volist name=":parseConfigAttr($config['extra'])" id="vo"}
+                                                    <option value="{$key}" {eq name="config.value" value="$key"}selected{/eq} >{$vo}</option>
+                                                 {/volist}
+                                            </select>
+                                        {/case}
+                                        {case value="5"}
+                                            {volist name=":parseConfigAttr($config['extra'])" id="vo"}
+                                                <input type="radio" name="config[{$config.name}]" value="{$key}" {eq name="config.value" value="$key"}checked{/eq} >{$vo} &nbsp;&nbsp;
+                                            {/volist}
+                                        {/case}
+                                    {/switch}
+                                </td>
+                            </tr>
+                        {/volist}
+                    </table>
+                </div>
+            {/notempty}
+        {/volist}
+    </div>
+    <div class="container">
+        <a class="easyui-linkbutton button-small" onclick="onSubmit()"> 保存</a>
+    </div>
+</form>
+<script type="text/javascript">
+    var onSubmit = function () {
+        easyui.submit($('form'), function (result) {
+            try {
+                easyui.alert(result.msg);
+                return false;
+            } catch (e) {
+            }
+        })
+    }
+
+    function onOpen() {
+        var opts = {
+            title:'{$Think.lang.system_variable}',
+            href:'{:url("index")}',
+            width:'90%',
+            height:'95%',
+            buttons:[],
+            top:'4.8%',
+            left:'10.3%',
+            onClose:function (node) {
+                window.location.reload();
+            }
+        };
+        easyui.dialog(opts);
+    }
+</script> 

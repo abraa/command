@@ -1,0 +1,95 @@
+<form id="toolbar" class="form">
+    <table width="100%">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="onRemove()">{$Think.lang.delete}</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onOpen({})">{$Think.lang.add}</a>
+            </td>
+            <td align="right">
+                <select name="search_type" class="easyui-combobox" style="width: 100px;">
+                    <option value="-1">{$Think.lang.config_type}</option>
+                    {volist name="Think.config.CONFIG_TYPE_LIST" id="type"}
+                    <option value="{$key}">{$type}</option>
+                    {/volist}
+                </select>
+                <select name="search_group" class="easyui-combobox" style="width: 100px;">
+                    <option value="-1">{$Think.lang.config_group}</option>
+                    <option value="0">{$Think.lang.config_not_group}</option>
+                    {volist name="Think.config.CONFIG_GROUP_LIST" id="type"}
+                    <option value="{$key}">{$type}</option>
+                    {/volist}
+                </select>
+                <input name="keyword" class="easyui-textbox" data-options="buttonText:' {$Think.lang.search} ',prompt:'{$Think.lang.keyword}',buttonIcon:'icon-search',onClickButton: onSearch" style="width:250px;">
+            </td>
+        </tr>
+    </table>
+</form>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'name',width:120">{$Think.lang.config_code}</th>
+        <th data-options="field:'title',width:50">{$Think.lang.config_name}</th>
+        <th data-options="field:'group_name',width:50">{$Think.lang.config_group}</th>
+        <th data-options="field:'type_name',width:50">{$Think.lang.config_type}</th>
+        <th data-options="field:'create_time',width:60">{$Think.lang.add_time}</th>
+        <th data-options="field:'update_time',width:60, align:'center'">{$Think.lang.edit_time}</th>
+    </tr>
+    </thead>
+</table>
+<script type="text/javascript">
+    var grid = $("#grid");
+    $(function () {
+        easyui.datagrid({
+            element: grid,
+            onDblClickRow: function (index, node) {
+                onOpen(node)
+            }
+        });
+    });
+
+
+    function onOpen(node) {
+        var opts = {
+            href: '{:url("form")}',
+            width: 500,
+            data: node,
+            modal:false,
+            handler: function(result){
+                grid.datagrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+
+    function onSearch() {
+        var query = $('#toolbar').form('getData');
+        grid.datagrid({
+            queryParams: query
+        });
+    }
+    
+    function onRemove() {
+        var rows = grid.datagrid('getChecked');
+        var items = [];
+        for(var i = 0; i < rows.length; i++){
+            items.push(rows[i].id);
+        }
+        items = items.join(',');
+        if(empty(items)){
+            easyui.alert('请选择需要操作的选项！');
+            return false;
+        }
+        easyui.confirm('请再次确认是否需要继续进行您的操作!', function(){
+            easyui.post('{:url("delete")}', {id: items}, function(result){
+                try{
+                    if(!result.code){
+                        easyui.alert(result.msg);
+                    }
+                    grid.datagrid('reload');
+                }catch (e){}
+            });
+        });
+    }
+</script> 

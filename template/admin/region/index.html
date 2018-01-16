@@ -1,0 +1,142 @@
+<div id="toolbar" class="form">
+    <table width="100%">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onAdd(false)">{$Think.lang.add}{$Think.lang.same_level}</a>
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onAdd(true)">{$Think.lang.add}{$Think.lang.lower}</a>
+                <a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="onSave()">{$Think.lang.save}</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'name',width:120,editor:'text'">{$Think.lang.region_name}</th>
+        <th data-options="field:'abbreviation',width:50,editor:'text'">{$Think.lang.abbreviation}</th>
+        <th data-options="field:'code',width:50,editor:'text'">{$Think.lang.region_code}</th>
+        <th data-options="field:'zip_code',width:30,editor:{type:'numberbox',options:{min:0}}">{$Think.lang.zip_code}</th>
+        <th data-options="field:'city_code',width:30,editor:{type:'numberbox',options:{min:0}}">{$Think.lang.city_code}</th>
+        <th data-options="field:'lng',width:50,editor:{type:'numberbox',options:{min:0,precision:6}}">{$Think.lang.region_lng}</th>
+        <th data-options="field:'lat',width:50,editor:{type:'numberbox',options:{min:0,precision:6}}">{$Think.lang.region_lat}</th>
+        <th data-options="field:'create_time', width:40">{$Think.lang.add_time}</th>
+        <th data-options="field:'update_time', width:40">{$Think.lang.edit_time}</th>
+    </tr>
+    </thead>
+</table>
+<div id="menu" class="easyui-menu" data-options="onClick:onMenu">
+    <div data-options="name:'modify', iconCls:'icon-edit'">{$Think.lang.edit}</div>
+    <div data-options="name:'add', iconCls:'icon-add'">{$Think.lang.add}{$Think.lang.lower}</div>
+    <div data-options="name:'remove', iconCls:'icon-remove'">{$Think.lang.delete}</div>
+</div>
+<script type="text/javascript">
+    var grid = $('#grid');
+    var editIndex;
+    $(function () {
+        easyui.treegrid({
+            element:grid,
+            idField:'id',
+            treeField:'name',
+            dnd: true,
+            animate: true,
+            onClickCell:function () {
+                grid.treegrid('endEdit',editIndex);
+                grid.treegrid('cancelEdit',editIndex);
+                editIndex = undefined;
+            },
+            onContextMenu:function (e,node) {
+                e.preventDefault();
+                try{
+                    $(this).treegrid('select',node.id);
+                    $("#menu").menu('show',{
+                        left:e.pageX,
+                        top:e.pageY
+                    })
+                }catch (e){}
+            }
+
+        })
+    });
+
+
+    function onMenu(item) {
+        switch (item.name){
+            case 'add':
+                onAdd(true);
+                break;
+            case 'modify':
+                var node = grid.treegrid('getSelected');
+                editIndex = node.id;
+                onModify();
+                break;
+            case 'remove':
+                var node = grid.treegrid('getSelected');
+                if(node) {
+                    easyui.doAjax('{:url("delete")}', {id: node.id}, function(result){
+                        if(result.status == 1){
+                            grid.treegrid('remove',node.id);
+                        }
+                    });
+                }
+        }
+    }
+
+    function onModify() {
+        if(editIndex != undefined){
+            grid.treegrid('select',editIndex);
+        }
+        var node = grid.treegrid('getSelected');
+        grid.treegrid('beginEdit',node.id);
+    }
+
+    function onSave() {
+        if(editIndex  == undefined){
+            return;
+        }
+        grid.treegrid('endEdit',editIndex);
+        var node = grid.treegrid('getSelected');
+        delete node.create_time;
+        delete node.update_time;
+        easyui.post("{:url('save')}",node,function (result) {
+            if(result.info){
+                easyui.alert(result.info);
+            }
+            grid.treegrid('cancelEdit',editIndex);
+            editIndex = undefined;
+            grid.treegrid('reload');
+        });
+    }
+
+    function onAdd(flag) {
+        var node = grid.treegrid('getSelected');
+        var data = {
+            id:0,
+            name:'{$Think.lang.please_enter}{$Think.lang.region_name}',
+            abbreviation:'{$Think.lang.please_enter}{$Think.lang.abbreviation}',
+            code:'{$Think.lang.please_enter}{$Think.lang.region_code}',
+            zip_code:0,
+            city_code:0,
+            lng:0.000000,
+            lat:0.000000
+        };
+        if(node){
+            if(flag){
+                data.parent_id = node.id;
+                data.level = node.level++;
+                grid.treegrid('append',{
+                    parent:node.id,
+                    data:[data]
+                });
+            }else{
+                data.parent_id = node.parent_id;
+                data.level = node.level;
+                grid.treegrid('insert',{
+                    after:node.id,
+                    data:data
+                });
+            }
+            editIndex = data.id;
+            onModify();
+        }
+    }
+</script>

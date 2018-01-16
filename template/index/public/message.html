@@ -1,0 +1,20 @@
+<script type="text/javascript">
+    var url = "{$url}";
+    var message = "{$msg}";
+    easyui.alert(message, function () {
+        closeWin();
+        try {
+            parent.closeTab();
+        } catch (e) {
+        }
+    });
+
+    function closeWin() {
+        var p = window.parent ? window.parent : parent;
+        if (!empty(p.shadow.dgShadow)) {
+            p.shadow.destroy();
+        } else {
+            easyui.dialog('destroy');
+        }
+    }
+</script>
