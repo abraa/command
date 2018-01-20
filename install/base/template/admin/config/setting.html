@@ -12,42 +12,43 @@
 <form data-url="{:url('setting')}" method="post" class="form container">
     <div class="easyui-tabs" data-options="plain:true, tabHeight:'35'">
         {volist name="groupList" id="group"}
-            {notempty name="list[$key]"}
-                <div title="{$group}{$Think.lang.deploy}">
-                    <table>
-                        {volist name="list[$key]" id="config"}
-                            <tr>
-                                <th>{$config.title}：</th>
-                                <td>
-                                    {switch name="config.type"}
-                                        {case value="1"}
-                                        <input type="text" class="easyui-numberbox" name="config[{$config.name}]" value="{$config.value}" style="width:300px;height:30px">
-                                        {/case}
-                                        {case value="2"}
-                                        <input type="text" class="easyui-textbox" name="config[{$config.name}]" value="{$config.value}" style="width:300px;height:30px">
-                                        {/case}
-                                        {case value="3"}
-                                        <input type="text" class="easyui-textbox" name="config[{$config.name}]" value="{$config.value}" data-options="multiline:true" style="width:300px;height:100px">
-                                        {/case}
-                                        {case value="4"}
-                                            <select name="config[{$config.name}]" class="easyui-combobox" style="min-width: 100px;">
-                                                 {volist name=":parseConfigAttr($config['extra'])" id="vo"}
-                                                    <option value="{$key}" {eq name="config.value" value="$key"}selected{/eq} >{$vo}</option>
-                                                 {/volist}
-                                            </select>
-                                        {/case}
-                                        {case value="5"}
-                                            {volist name=":parseConfigAttr($config['extra'])" id="vo"}
-                                                <input type="radio" name="config[{$config.name}]" value="{$key}" {eq name="config.value" value="$key"}checked{/eq} >{$vo} &nbsp;&nbsp;
-                                            {/volist}
-                                        {/case}
-                                    {/switch}
-                                </td>
-                            </tr>
+        {notempty name="list[$key]"}
+        <div title="{$group}{$Think.lang.deploy}">
+            <table>
+                {volist name="list[$key]" id="config"}
+                <tr>
+                    <th>{$config.title}：</th>
+                    <td>
+                        {switch name="config.type"}
+                        {case value="1"}
+                        <input type="text" class="easyui-numberbox" name="config[{$config.name}]" value="{$config.value}" style="width:300px;height:30px">
+                        {/case}
+                        {case value="2"}
+                        <input type="text" class="easyui-textbox" name="config[{$config.name}]" value="{$config.value}" style="width:300px;height:30px">
+                        {/case}
+                        {case value="3"}
+                        <input type="text" class="easyui-textbox" name="config[{$config.name}]" value="{$config.value}" data-options="multiline:true" style="width:300px;height:100px">
+                        {/case}
+                        {case value="4"}
+                        <!--<select name="config[{$config.name}]" class="easyui-combobox" style="min-width: 100px;">-->
+                        <!--{volist name=":parseConfigAttr($config['extra'])" id="vo"}-->
+                        <!--<option value="{$key}" {eq name="config.value" value="$key"}selected{/eq} >{$vo}</option>-->
+                        <!--{/volist}-->
+                        <!--</select>-->
+                        <textarea name="config[{$config.name}]" placeholder="{$config['extra']}" rows="{:count(parseConfigAttr($config['value']))+1}" style="width:300px">{$config.value}</textarea>
+                        {/case}
+                        {case value="5"}
+                        {volist name=":parseConfigAttr($config['extra'])" id="vo"}
+                        <input type="radio" name="config[{$config.name}]" value="{$key}" {eq name="config.value" value="$key"}checked{/eq} >{$vo} &nbsp;&nbsp;
                         {/volist}
-                    </table>
-                </div>
-            {/notempty}
+                        {/case}
+                        {/switch}
+                    </td>
+                </tr>
+                {/volist}
+            </table>
+        </div>
+        {/notempty}
         {/volist}
     </div>
     <div class="container">

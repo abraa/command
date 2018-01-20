@@ -45,7 +45,7 @@ class Login extends BaseLogic{
         if (config('verify_close')) {
             $verify = false;
             if (!empty($verify_code)) {
-                $verify = verify(['code' => $verify_code], true);
+                $verify = captcha_check($verify_code);
             }
             if (empty($verify)) {
                 $this->err = lang('verify_code_error');

@@ -136,26 +136,6 @@ if (!function_exists('getRandom')) {
         return $str;
     }
 }
-if (!function_exists('verify')) {
-    /**
-     * 图片校验码
-     * @param array $config 配置
-     * @param bool $isChecked 是否校验
-     * @return bool|\think\Response
-     */
-    function verify(array $config = [], $isChecked = false)
-    {
-        $code = empty($config['code']) ? '' : $config['code'];
-        $key = empty($config['key']) ? '' : $config['key'];
-        unset($config['code'], $config['key']);
-        $captcha = new \think\captcha\Captcha($config);
-        if (empty($code) && $isChecked == false) {
-            return $captcha->entry($key);
-        } else {
-            return $captcha->check($code, $key);
-        }
-    }
-}
 if (!function_exists('formatTime')) {
     /**
      * 格式化时间

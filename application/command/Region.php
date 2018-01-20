@@ -36,7 +36,6 @@ class Region extends Install{                            //继承think\console\C
     {
         parent::initialize($input,$output);
         $this->path = ROOT_PATH .'install'. DS .'region';
-        $this->rootPath = ROOT_PATH;
     }
 
 

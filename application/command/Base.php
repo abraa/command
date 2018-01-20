@@ -40,7 +40,6 @@ class Base extends Install{                            //继承think\console\Com
     {
         parent::initialize($input,$output);
         $this->path = ROOT_PATH .'install'. DS .'base';
-        $this->rootPath = ROOT_PATH;
     }
 
     /**

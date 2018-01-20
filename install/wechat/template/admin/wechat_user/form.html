@@ -1,0 +1,105 @@
+<form data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+        
+        <table>
+            <tr>
+                <th>头像地址：</th>
+                <td>
+                    <img id="headimgurl" src="" width="50" height="50" />
+                </td>
+            </tr>
+            <tr>
+                <th>微信昵称：</th>
+                <td>
+                    <input name="nickname" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>公众号名称：</th>
+                <td>
+                    <input name="wechat_account" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>Openid：</th>
+                <td>
+                    <input name="openid" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>Unionid：</th>
+                <td>
+                    <input name="unionid" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>性别：</th>
+                <td>
+                    <input name="sex" id="sex" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>语言：</th>
+                <td>
+                    <input name="language" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>地区：</th>
+                <td>
+                	<input name="region" id="region" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>关注状态：</th>
+                <td>
+                    <input name="subscribe" id="subscribe" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>创建时间：</th>
+                <td>
+                    <input name="create_time" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>更新时间：</th>
+                <td>
+                    <input name="update_time" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>最近关注时间：</th>
+                <td>
+                    <input name="subscribe_time" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>取消关注时间：</th>
+                <td>
+                    <input name="cancel_time" class="easyui-textbox" data-options="readonly:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>{$Think.lang.remark}：</th>
+                <td>
+                    <input type="text" name="remark" class="easyui-textbox" data-options="width:330,multiline:true,prompt:'对当前用户进行备注说明...'">
+                    <input type="hidden" name="id" value="0">
+                </td>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </fieldset>
+    <input type="hidden" name="id" value="0" />
+</form>
+<script>
+function setData(row){
+	$('#headimgurl').attr('src',row.headimgurl);
+	$('#region').textbox('setText', row.country+' '+row.province+' '+row.city);
+	$('#sex').textbox('setText', row.sex==1 ? '男' : '女');
+	$('#subscribe').textbox('setText', row.subscribe==1 ? '已关注' : '已取消');
+}
+</script>

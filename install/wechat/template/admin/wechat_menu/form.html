@@ -1,0 +1,100 @@
+<form data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+        <table>
+            <tr>
+                <th>栏目名称：</th>
+                <td><input name="text" class="easyui-textbox" size="35" data-options="required:true"></td>
+            </tr>
+            <tr>
+                <th>微信公众号：</th>
+                <td>
+                    <input class="easyui-combobox" id="account_id_select" disabled method="get"
+                           data-options="valueField:'id',textField:'text',url:'{:url('WechatAccount/select','field=id,text')}',readonly:true"
+                           style="width:150px;">
+                </td>
+            </tr>
+            <tr>
+                <th>栏目级别：</th>
+                <td>
+                    <select name="level" class="easyui-combobox" id="level" style="width: 80px;">
+                        <option value="0">一级栏目</option>
+                        <option value="1">二级栏目</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>所属一级栏目：</th>
+                <td>
+                    <input name="pid" id="parent"   style="width:150px;">
+                </td>
+            </tr>
+            <tr>
+                <th>类型：</th>
+                <td>
+                    <select name="action" class="easyui-combobox" id="" style="width: 80px;">
+                        <option value="url">链接</option>
+                        <option value="click">点击</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>状态：</th>
+                <td>
+                    <select name="locked" class="easyui-combobox" style="width: 60px;">
+                        <option value="0">开启</option>
+                        <option value="1">关闭</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>排序：</th>
+                <td><input name="orderby" type="text" class="easyui-numberspinner" value="50"
+                           data-options="min:0,max:1000" style="width:50px;"></td>
+            </tr>
+            <tr>
+                <th>参数/url：</th>
+                <td>
+                    <input name="action_param" class="easyui-textbox" size="35">
+                    <font color="red">若是url用http开头</font>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="id" value="0">
+        <input type="hidden" name="account_id" id="account_id" value="">
+    </fieldset>
+</form>
+<script type="text/javascript">
+    var level = $("#level");
+    var parent = $("#parent");
+
+    $(function () {
+
+    });
+
+    function showParent(value) {
+        var status = value == 1 ? 'enable' : 'disable';
+        account_id = $('#account_id_select').combobox('getValue');
+        var url = http_build_query("{:url('select')}", {level:1,account_id: account_id});
+        parent.combobox({
+            url: url,
+            valueField: 'id',
+            textField: 'text'
+        });
+        parent.combobox(status);
+    }
+    function setData(data) {
+        account_id = empty(data.account_id) ? 0 : data.account_id;
+        $('#account_id').val(account_id);
+        $('#account_id_select').combobox('setValue', account_id);
+        level.combobox({
+            onChange: function (value) {
+                showParent(value);
+            },
+            onLoadSuccess: function (rows) {
+                var levelData = empty(data.level) ? 0 : data.level;
+                level.combobox('setValue', levelData);
+                showParent(levelData);
+            }
+        });
+    }
+</script>

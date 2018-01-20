@@ -1,0 +1,78 @@
+<div id="toolbar">
+    <table class="form" width="100%">
+        <tr>
+            <td>&nbsp;
+                
+            </td>
+            <td align="right">
+            	<select id="subscribe" class="easyui-combobox" name="subscribe">
+                    <option value="-1">关注状态</option>
+                    <option value="0">已取消</option>
+                    <option value="1">已关注</option>
+                </select>
+            	<input id="keyword" name="keyword" class="easyui-textbox" data-options="prompt:'搜索关键字...'" style="width:160px;" />
+                <a id="" class="easyui-linkbutton button-small l-btn l-btn-small" onclick="onSearch()" group=""><span class="l-btn-left"><span class="l-btn-text">搜索</span></span></a>
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+    	<th data-options="field:'id',sortable:true,width:20, align:'center'">ID</th>
+        <th data-options="field:'headimgurl',sortable:true,width:20, align:'center', formatter: function(value){
+            return '<img src=\''+value+'\' width=30 height=30 />';
+        }">头像</th>
+        <th data-options="field:'nickname',sortable:true,width:30">微信昵称</th>
+        <th data-options="field:'wechat_account',sortable:false,width:30">公众号名称</th>
+        <th data-options="field:'openid',sortable:true,width:40">Openid</th>
+        <th data-options="field:'unionid',sortable:true,width:40">Unionid</th>
+        <th data-options="field:'sex',sortable:true,width:20, align:'center', formatter: function(value){
+            return value == '1' ? '男' : '女';
+        }">性别</th>
+        <th data-options="field:'remark',sortable:true,width:40">备注</th>
+        <th data-options="field:'subscribe',sortable:true,width:30, align:'center', formatter: function(value){
+            return value == '1' ? '<span style=color:green>已关注<span>' : '<span style=color:red>已取消</span>';
+        }">关注状态</th>
+        <th data-options="field:'create_time',sortable:true,width:30">创建时间</th>
+        <th data-options="field:'update_time',sortable:true,width:30">更新时间</th>
+        <th data-options="field:'subscribe_time',sortable:true,width:30">最近关注时间</th>
+        <th data-options="field:'cancel_time',sortable:true,width:30">取消关注时间</th>
+    </tr>
+    </thead>
+</table>
+<script type="text/javascript">
+    var grid = $("#grid");
+    $(function () {
+        easyui.datagrid({
+            element: grid,
+			rownumbers: false,
+			sortName: 'update_time desc,create_time desc,id',//subscribe
+			sortOrder: 'asc',
+            onDblClickRow: function (index, row) {
+                onOpen(row);
+            }
+        });
+    })
+	function onSearch() {
+		var subscribe = $('#subscribe').combobox('getValue');
+		var keyword = $('#keyword').val();
+		grid.datagrid({
+			queryParams: {
+				keyword: keyword,
+				subscribe: subscribe
+			}
+		});
+	}
+    function onOpen(row) {
+        var opts = {
+            href: '{:url("form")}',
+            width: 550,
+            data: row,
+            handler: function (result) {
+                grid.datagrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+</script>

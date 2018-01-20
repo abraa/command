@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * ====================================
  * thinkphp5
  * ====================================
@@ -56,7 +56,15 @@ class ConfigSupport {
         $config = array();
         if($data && is_array($data)){
             foreach ($data as $value) {
-                $config[$value['name']] = self::parse($value['type'], $value['value']);
+                if(strrpos(".",$value['name'])){
+                    $name = explode(".",$value['name']);                //name使用 . 的是二维参数
+                    if(!isset($config[$name[0]])){
+                        $config[$name[0]] = [];
+                    }
+                    $config[$name[0]][$name[1]] = self::parse($value['type'], $value['name']);
+                }else{
+                    $config[$value['name']] = self::parse($value['type'], $value['name']);
+                }
             }
         }
         config($config);

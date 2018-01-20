@@ -1,0 +1,69 @@
+<form data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+        
+        <table>
+            <tr>
+                <th>名称：</th>
+                <td>
+                    <input name="text" class="easyui-textbox" data-options="required:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>令牌：</th>
+                <td>
+                    <input name="token" class="easyui-textbox" data-options="required:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>应用ID：</th>
+                <td>
+                    <input name="app_id" class="easyui-textbox" data-options="required:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>应用密钥：</th>
+                <td>
+                    <input name="app_secret" class="easyui-textbox" data-options="required:true, width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>商务号：</th>
+                <td>
+                    <input name="machine_id" class="easyui-textbox" data-options="width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>支付密钥：</th>
+                <td>
+                    <input name="pay_key" class="easyui-textbox" data-options="width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>加密方式：</th>
+                <td>
+                	<select id="crypted" class="easyui-combobox" name="crypted" data-options="required:true, width:330">
+                        <option value="0">明文模式</option>
+                        <option value="1">兼容模式</option>
+                        <option value="2">安全模式</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>加密密钥：</th>
+                <td>
+                    <input name="encoding_aes_key" class="easyui-textbox" data-options="width:330">
+                </td>
+            </tr>
+            <tr>
+                <th>是否锁定：</th>
+                <td>
+                	<select id="locked" class="easyui-combobox" name="locked" data-options="required:true, width:330">
+                        <option value="0">{$Think.lang.no}</option>
+                        <option value="1">{$Think.lang.yes}</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <input type="hidden" name="id" value="0" />
+</form>

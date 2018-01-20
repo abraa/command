@@ -1,0 +1,113 @@
+<div id="toolbar">
+    <table class="form">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onOpen({})">添加</a>
+                <a class="easyui-linkbutton" iconCls="fa fa-edit" plain="true" onclick="create()">更新微信菜单</a>
+                <a class="easyui-linkbutton" iconCls="fa fa-remove" plain="true" onclick="remove()">移除微信菜单</a>
+                <a class="datagrid-btn-separator"></a>
+                &nbsp;&nbsp;
+                微信公众号：
+                <select id="account_id" class="easyui-combobox" style="width: 150px;" data-options="width:150">
+                </select>
+
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'text',width:40">菜单名称</th>
+        <th data-options="field:'action',width:30">菜单类型</th>
+        <th data-options="field:'action_param',width:100">属性参数</th>
+        <th data-options="field:'orderby',width:10,align:'center'">排序</th>
+        <th data-options="field:'locked',width:10,align:'center', formatter: function(value){
+            return value == '1' ? '<font color=red>关闭</font>' : '开启';
+        }">状态</th>
+        <th data-options="field:'create_time',width:50, sortable:true">添加时间</th>
+        <th data-options="field:'update_time',width:50, sortable:true">更新时间</th>
+    </tr>
+    </thead>
+</table>
+<div id="leftMenu" class="easyui-menu" data-options="onClick:onMenu">
+    <div data-options="name:'delete', iconCls:'icon-no'">删除功能</div>
+    <div data-options="name:'reload',iconCls:'icon-save'">刷新列表</div>
+</div>
+<script type="text/javascript">
+    var account_id = '{$Request.get.account_id|default=1}';
+
+    var grid = $("#grid");
+    var rowId = 0;
+    $(function () {
+        $('#account_id').combobox({                                   //初始化微信公众号
+            url:'{:url("wechatAccount/select","field=id,text")}',
+            valueField:'id',
+            textField:'text',
+            value:account_id ,
+            onChange: function(account_id){
+                window.location = "{:url('index')}?account_id="+account_id;
+            }
+        });
+        easyui.treegrid({
+            element:grid,
+            queryParams:{account_id:account_id},
+            onDblClickRow: function(node){
+                onOpen(node);
+            },
+            onContextMenu: function(e, row){
+                e.preventDefault();
+                try {
+                    rowId = row.id;
+                    grid.treegrid('select', rowId);
+                    $('#leftMenu').menu('show', {
+                        left:e.pageX,
+                        top:e.pageY
+                    });
+                }catch(e){}
+
+            },
+        });
+    });
+
+
+    function onOpen(node) {
+        node.account_id = account_id;
+        var opts = {
+            href:'{:url("form")}',
+            width:600,
+            data:node,
+            handler:function (result) {
+                grid.treegrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+    
+    function create() {
+        easyui.doAjax("{:url('create')}?account_id="+account_id,'',function (result) {
+            //easyui.alert(result.msg);
+        })
+    }
+    
+    function remove() {
+        easyui.doAjax("{:url('remove')}?account_id="+account_id,'',function (result) {
+            //easyui.alert(result.msg);
+        })
+    }
+
+    function onMenu(item) {
+        switch (item.name) {
+            case 'reload':
+                grid.treegrid('reload');
+                break;
+            case 'delete':
+                if (rowId) {
+                    easyui.doAjax('{:url("delete")}', {id: rowId, account_id:account_id}, function () {
+                        grid.treegrid('reload');
+                    });
+                }
+                break;
+        }
+    }
+</script>

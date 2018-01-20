@@ -1,0 +1,68 @@
+<div id="toolbar">
+    <table class="form" width="100%">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="onOpen({})">{$Think.lang.add}</a>
+            </td>
+            <td align="right">
+            	<input id="keyword" name="keyword" class="easyui-textbox" data-options="prompt:'搜索关键字...'" style="width:160px;" />
+                <a id="" class="easyui-linkbutton button-small l-btn l-btn-small" onclick="onSearch()" group=""><span class="l-btn-left"><span class="l-btn-text">搜索</span></span></a>
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+    	<th data-options="field:'id',sortable:true,width:20, align:'center'">ID</th>
+        <th data-options="field:'text',sortable:true,width:40">名称</th>
+        <th data-options="field:'token',sortable:true,width:50">令牌</th>
+        <th data-options="field:'app_id',sortable:true,width:50">应用ID</th>
+        <th data-options="field:'app_secret',sortable:true,width:100">应用密钥</th>
+        <th data-options="field:'machine_id',sortable:true,width:60">商务号</th>
+        <th data-options="field:'pay_key',sortable:true,width:60">支付密钥</th>
+        <th data-options="field:'crypted',sortable:true,width:30, align:'center', formatter: function(value){
+            return value == '1' ? '兼容模式' : (value == '2' ? '安全模式' : '明文模式');
+        }">加密方式</th>
+        <th data-options="field:'encoding_aes_key',sortable:true,width:60">加密密钥</th>
+        <th data-options="field:'locked',sortable:true,width:30, align:'center', formatter: function(value){
+            return value == '1' ? '<font color=red>{$Think.lang.yes}</font>' : '{$Think.lang.no}';
+        }">是否锁定</th>
+        <th data-options="field:'create_time',sortable:true,width:60">创建时间</th>
+        <th data-options="field:'update_time',sortable:true,width:60">更新时间</th>
+    </tr>
+    </thead>
+</table>
+<script type="text/javascript">
+    var grid = $("#grid");
+    $(function () {
+        easyui.datagrid({
+            element: grid,
+			rownumbers: false,
+			sortName: 'update_time desc,create_time desc,id',
+			sortOrder: 'asc',
+            onDblClickRow: function (index, row) {
+                onOpen(row);
+            }
+        });
+    })
+	function onSearch() {
+		var keyword = $('#keyword').val();
+		grid.datagrid({
+			queryParams: {
+				keyword: keyword
+			}
+		});
+	}
+    function onOpen(row) {
+        var opts = {
+            href: '{:url("form")}',
+            width: 550,
+            data: row,
+            handler: function (result) {
+                grid.datagrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+</script>
