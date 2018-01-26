@@ -54,19 +54,25 @@ class ConfigSupport {
         }
         $data = $db->field('type,name,value,group')->select();
         $config = array();
+        $group = array();
         if($data && is_array($data)){
+
             foreach ($data as $value) {
-                if(strrpos(".",$value['name'])){
+                if(strrpos($value['name'],".")){
                     $name = explode(".",$value['name']);                //name使用 . 的是二维参数
                     if(!isset($config[$name[0]])){
                         $config[$name[0]] = [];
                     }
-                    $config[$name[0]][$name[1]] = self::parse($value['type'], $value['name']);
+                    $config[$name[0]][$name[1]] = self::parse($value['type'], $value['value']);
+                    $group[$name[0]] = $name[0];
                 }else{
-                    $config[$value['name']] = self::parse($value['type'], $value['name']);
+                    $config[$value['name']] = self::parse($value['type'], $value['value']);
                 }
             }
         }
+
+        $config['CONFIG_GROUP_LIST'] = $config['CONFIG_GROUP_LIST'] + $group;
+
         config($config);
         cache('DB_CONFIG_DATA', $config);
     }

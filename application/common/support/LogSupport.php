@@ -30,6 +30,6 @@ class LogSupport {
             'note' => $message,
             'create_time' => time(),
         );
-        model('adminLog')->create($data);
+        db('adminLog')->insert($data);
     }
 }
