@@ -306,7 +306,7 @@ if (!function_exists('base64ToImage')) {
             if(file_put_contents($fileName, base64_decode(str_replace($result[1], '', $base))) == false){
                abort(500, '无法创建文件');
             }
-            return str_replace("\\",'/',str_replace('', ROOT_PATH . 'public',$fileName));
+            return str_replace("\\",'/',str_replace(ROOT_PATH . 'public','', $fileName));
         }else{
             return '';
         }
