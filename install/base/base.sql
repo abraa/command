@@ -154,6 +154,7 @@ INSERT INTO `py_menu` VALUES ('5', '管理人员', '1', 'admin', 'admin', '*', '
 INSERT INTO `py_menu` VALUES ('6', '角色管理', '1', 'admin', 'role', '*', '', '1', 'fa-user-secret', '50', '1435324617', '1447831484');
 INSERT INTO `py_menu` VALUES ('7', '组织架构', '1', 'admin', 'group', '*', 'save', '1', 'fa-sitemap', '50', '1435324617', '1448589479');
 INSERT INTO `py_menu` VALUES ('8', '功能管理', '1', 'admin', 'menu', '*', '', '1', 'fa-cogs', '50', '1435324617', '1447831850');
+INSERT INTO `py_menu` VALUES ('9', '功能管理', '2', 'admin', 'file', '*', '', '1', 'fa-file-image-o', '50', '1435324617', '1447831850');
 
 -- ----------------------------
 -- Table structure for `py_role`

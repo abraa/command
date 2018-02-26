@@ -52,6 +52,6 @@ class Index extends BaseController
 
     public function verify()
     {
-        return verify();
+        return captcha();
     }
 }
