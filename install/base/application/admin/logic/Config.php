@@ -50,7 +50,12 @@ class Config extends BaseLogic
         if (!empty($list)) {
             foreach ($list as $row) {
                 if (empty($row['group']) && !in_array($row['name'], array('CONFIG_GROUP_LIST', 'CONFIG_TYPE_LIST'))) {
-                    $evaluate[$row['name']] = unserialize($row['value']);
+                    if(strrpos($row['name'],'.')){
+                        $name = explode(".",$row['name']);
+                        $row['group'] = $name[0];
+                    }else{
+                        $config[$row['name']] = unserialize($row['value']);
+                    }
                 }
                 $config[$row['group']][] = $row;
             }
