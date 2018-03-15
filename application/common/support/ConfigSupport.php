@@ -70,9 +70,9 @@ class ConfigSupport {
                 }
             }
         }
-
-        $config['CONFIG_GROUP_LIST'] = $config['CONFIG_GROUP_LIST'] + $group;
-
+        if(isset($config['CONFIG_GROUP_LIST'])){
+            $config['CONFIG_GROUP_LIST'] = $config['CONFIG_GROUP_LIST'] + $group;
+        }
         config($config);
         cache('DB_CONFIG_DATA', $config);
     }

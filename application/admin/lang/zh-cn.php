@@ -14,7 +14,13 @@ return [
     'MODIFY_PASSWORD' => '修改密码',
     'LAST_LOGIN_TIME' => '上次登陆时间',
     'LAST_LOGIN_IP' => '上次登陆IP',
-
+    'PHP_OS'=>'操作系统',
+    'SERVER_SOFTWARE'=>'运行环境',
+    'mysql_get_server_info' => 'PHP运行方式',
+    'MYSQL_VERSION'=>'MYSQL版本',
+    'upload_max_filesize' => '上传附件限制',
+    'max_execution_time'=>'执行时间限制',
+    'disk_free_space' => '剩余空间',
     //管理员模块
     'GROUP_NAME_REQUIRE' => '请选择所属组别',
     'ROLE_NAME_REQUIRE' => '请选择所属角色',

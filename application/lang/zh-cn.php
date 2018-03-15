@@ -46,4 +46,6 @@ return [
     'MALE' => '男',
     'FEMALE' => '女',
     'MISSING_PARAMS' => '缺少参数',
+    'FILE' => '文件',
+    'DIR' => '目录',
 ];

@@ -19,7 +19,14 @@
     </div>
     <div data-options="region:'center',border:false,split:false" class="borderTop">
         <div id="tabs">
-            <div title="{$Think.lang.work_panel}" class="container"></div>
+            <div title="{$Think.lang.work_panel}" class="container">
+                <ul>
+                    {foreach name="server_info" item="v"  key="k" }
+                        <li><span>{:lang($k)}:</span>{$v}</li>
+                    {/foreach}
+                </ul>
+
+            </div>
         </div>
     </div>
 </div>
