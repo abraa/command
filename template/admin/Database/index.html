@@ -1,0 +1,175 @@
+<div id="toolbar">
+    <table class="form">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" plain="true" iconCls="icon-print"  onclick="onExecute()"> 执行sql语句</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" plain="true" iconCls="icon-print"  onclick="onBackup()"> 备份数据库</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" plain="true" iconCls="icon-print"  onclick="onTable({})"> 添加数据表</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" plain="true" iconCls="icon-print"  onclick="onRemove()"> 删除数据表</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" plain="true" iconCls="icon-print"  onclick="onTable()"> 修改数据表</a>
+                <a class="datagrid-btn-separator"></a>
+                <a class="easyui-linkbutton" plain="true" iconCls="icon-print"  onclick="onExport()"> 导出数据表</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<table id="grid">
+    <thead>
+    <tr>
+        <th data-options="field:'id',checkbox:true"></th>
+        <th data-options="field:'Name',width:50">数据表</th>
+        <th data-options="field:'Comment',width:120">名称</th>
+        <th data-options="field:'Engine',width:50">引擎</th>
+        <th data-options="field:'Rows',width:50">行</th>
+        <th data-options="field:'Index_length',width:50">索引长度</th>
+        <th data-options="field:'Data_length',width:50">数据长度</th>
+        <th data-options="field:'Create_time',width:180">创建时间</th>
+    </tr>
+    </thead>
+</table>
+<div id="leftMenu" class="easyui-menu" data-options="onClick:onMenu">
+    <div data-options="name:'delete', iconCls:'icon-no'">{$Think.lang.delete}</div>
+    <div data-options="name:'reload',iconCls:'icon-save'">{$Think.lang.reload}{$Think.lang.list}</div>
+    <!--<div data-options="name:'add',iconCls:'fa fa-plus'">{$Think.lang.add}{$Think.lang.child}文件</div>-->
+</div>
+<script type="text/javascript">
+    var grid = $('#grid');
+    var path = null;
+    var rowId = 0;
+    $(function(){
+        easyui.datagrid({
+            element:grid,
+            idField:'id',
+            onContextMenu: function(e, row){
+                e.preventDefault();
+                try {
+                    $('#leftMenu').menu('show', {
+                        left:e.pageX,
+                        top:e.pageY
+                    });
+                }catch(e){}
+
+            },
+            onDblClickRow: function(index, node){
+                onOpen(node);
+            }
+        });
+    });
+
+    function onOpen(node) {
+        var opts = {
+            href: http_build_query('{:url("form")}',{id:node.id}),
+            width: 650,
+            data: node,
+            handler: function(result){
+                grid.datagrid('reload');
+            }
+        };
+        easyui.dialog(opts);
+    }
+
+    function onMenu(item) {
+        switch (item.name) {
+            case 'reload':
+                grid.datagrid('reload');
+                break;
+            case 'delete':
+                var node = grid.datagrid('getSelected');
+                if(node.id) {
+                    easyui.doAjax('{:url("delete")}', {id: node.id}, function(){
+                        grid.datagrid('reload');
+                    });
+                }
+                break;
+//            case 'add':
+//                onOpen();
+//                break;
+        }
+
+    }
+    function onRemove(){
+        var rows = grid.datagrid('getChecked');
+        var items = [];
+        for (var i in rows) {
+            items.push(rows[i].id);
+        }
+        items = items.join('|');
+        if (empty(items)) {
+            easyui.alert('请勾选择需要删除的表');
+            return false;
+        }
+        easyui.doAjax('{:url("delete")}', {id: items}, function(){
+            grid.datagrid('reload');
+        });
+    }
+
+    //导出选中数据表
+    function onExport(){
+        var rows = grid.datagrid('getChecked');
+        var items = [];
+        for (var i in rows) {
+            items.push(rows[i].id);
+        }
+        items = items.join('|');
+        if (empty(items)) {
+            easyui.alert('请选择需要导出的数据表');
+            return false;
+        }
+        var url = '{:url("export")}';
+        $('<form action="' + url + '" method="post"> <input type="hidden" name="id" value="' + items + '" /></form>')
+                .appendTo('body').submit().remove();
+    }
+
+    //添加修改数据表
+    function onTable(row){
+        var url = '{:url("table")}';
+        if(empty(row)){                             //修改
+            row = grid.datagrid('getSelected')  ;
+            if(empty(row)){
+                easyui.alert('请点击选中需要修改的数据表');
+            }
+            tablename = row['Comment'];
+            url = http_build_query(url,{id:row.id})
+        }else{                                      //添加
+            tablename = "";
+        }
+        var opts = {
+            href:url,
+            title:tablename,
+            width:'1200',
+            height:'700',
+            data: row,
+            handler: function(result){
+                grid.datagrid('reload');
+            }
+        };
+        easyui.dialog(opts);
+    }
+
+    //执行sql
+    function onExecute(){
+        var opts = {
+            href:'{:url("execute")}',
+            width:'600',
+            height:'350',
+            handler: function(result){
+                grid.datagrid('reload');
+            }
+        };
+        easyui.dialog(opts);
+    }
+    //备份数据库
+    function onBackup(){
+        easyui.confirm('请再次确认是否需要继续进行您的操作!', function(){
+            easyui.post("{:url('backup')}", {}, function(result){
+                try{
+                    easyui.alert(result.msg);
+                }catch (e){}
+            });
+        });
+    }
+</script>

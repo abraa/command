@@ -1,0 +1,255 @@
+<form id="form" data-url="{:url('table')}" class="form">
+    <table width="100%">
+        <tr>
+            <th>数据表名称：</th>
+            <td>
+                <input name="Name" class="easyui-textbox" data-options="required:true" size="35">
+            </td>
+            <th>数据表备注：</th>
+            <td>
+                <input name="Comment" class="easyui-textbox" data-options="" size="35">
+            </td>
+        </tr>
+        <input type="hidden" name="id" >
+    </table>
+</form>
+
+<div class="easyui-tabs" >
+    <div title="栏目" style="padding:10px;height: 100%">
+        <table id="column">
+            <thead>
+            <tr>
+                <th data-options="field:'id',checkbox:true,width:50" ></th>
+                <th data-options="field:'name',width:150" >名称</th>
+                <th data-options="field:'type',width:150">类型</th>
+                <th data-options="field:'is_null',width:100,formatter:function(val,row){
+                        if (val){
+                        return 'NULL';
+                        } else {
+                        return  'NOT NULL';
+                        }
+                }">允许空值(NULL)</th>
+                <th data-options="field:'default',width:100">默认</th>
+                <th data-options="field:'comment',width:150">注释</th>
+            </tr>
+            </thead>
+        </table>
+        <table width="100%">
+            <tr>
+                <td>
+                    <a class="easyui-linkbutton" plain="true"   onclick="onAdd('column')"> 添加</a>
+                    <a class="datagrid-btn-separator"></a>
+                    <a class="easyui-linkbutton" plain="true"   onclick="onRemove('column')"> 删除</a>
+                    <a class="datagrid-btn-separator"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div title="索引" style="padding:10px;">
+        <table id="index">
+            <thead>
+            <tr>
+                <th data-options="field:'id',checkbox:true,width:50" ></th>
+                <th data-options="field:'Key_name',width:250" >名称</th>
+                <th data-options="field:'Non_unique',width:150,formatter:function(val,row){
+                        if (val){
+                        return 'Normal';
+                        } else {
+                        return  'Unique';
+                        }
+                }">索引类型</th>
+                <th data-options="field:'Column_name_arr',width:150,formatter:function(val,row){
+                        return val.join(',');
+                }">索引字段</th>
+                <th data-options="field:'Index_type',width:150">索引方式</th>
+
+            </tr>
+            </thead>
+        </table>
+        <table width="100%">
+            <tr>
+                <td>
+                    <a class="easyui-linkbutton" plain="true"  onclick="onAdd('index')"> 添加</a>
+                    <a class="datagrid-btn-separator"></a>
+                    <a class="easyui-linkbutton" plain="true"   onclick="onRemove('index')"> 删除</a>
+                    <a class="datagrid-btn-separator"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div title="外键" style="padding:10px;">
+    </div>
+    <div title="触发器" style="padding:10px;">
+        <table id="triggers">
+            <thead>
+            <tr>
+                <th data-options="field:'id',checkbox:true,width:50" ></th>
+                <th data-options="field:'TRIGGER_NAME',width:250" >名称</th>
+                <th data-options="field:'ACTION_TIMING',width:250" >触发</th>
+                <th data-options="field:'EVENT_MANIPULATION',width:250" >操作</th>
+
+            </tr>
+            </thead>
+        </table>
+        <table width="100%">
+            <tr>
+                <td>
+                    <a class="easyui-linkbutton" plain="true"  onclick="onAdd('triggers')"> 添加</a>
+                    <a class="datagrid-btn-separator"></a>
+                    <a class="easyui-linkbutton" plain="true" onclick="onRemove('triggers')"> 删除</a>
+                    <a class="datagrid-btn-separator"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="leftMenu" class="easyui-menu" data-options="onClick:onMenu">
+    <div data-options="name:'delete', iconCls:'icon-no'">{$Think.lang.delete}</div>
+    <div data-options="name:'add', iconCls:'icon-save'">{$Think.lang.add}</div>
+    <div data-options="name:'reload',iconCls:'icon-save'">{$Think.lang.reload}{$Think.lang.list}</div>
+    <!--<div data-options="name:'add',iconCls:'fa fa-plus'">{$Think.lang.add}{$Think.lang.child}文件</div>-->
+</div>
+
+<script type="text/javascript">
+    var grid = $('#column');
+    var editUrl = null;
+    var tableName = null;
+    var rowId = 0;
+    function setData(data){
+        if(!empty(data.id)){
+            editUrl = http_build_query('{:url("edit")}',{id:data.id});
+            tableName = data.id;
+            // 列字段信息
+            $('#column').datagrid({
+                url: http_build_query('{:url("showfield")}',{id:data.id}),
+                destroyUrl:http_build_query('{:url("deletefield")}',{id:data.id}),
+                onDblClickRow: function (index, node) {
+                    grid = $(this);
+                    onOpen(node)
+                },
+                onRowContextMenu: function(e, rowIndex, rowData){
+                    grid = $(this);
+                    e.preventDefault();
+                    try {
+                        $('#leftMenu').menu('show', {
+                            left:e.pageX,
+                            top:e.pageY
+                        });
+                    }catch(e){}
+
+                }
+            });
+            //索引
+            $('#index').datagrid({
+                url: http_build_query('{:url("showindex")}',{id:data.id}),
+                destroyUrl:http_build_query('{:url("deleteindex")}',{id:data.id}),
+                onDblClickRow: function (index, node) {
+                    grid = $(this);
+                    onOpen(node)
+                },
+                onRowContextMenu: function(e, rowIndex, rowData){
+                    grid = $(this);
+                    e.preventDefault();
+                    try {
+                        $('#leftMenu').menu('show', {
+                            left:e.pageX,
+                            top:e.pageY
+                        });
+                    }catch(e){}
+
+                }
+            });
+            //触发器
+            $('#triggers').datagrid({
+                url: http_build_query('{:url("showtriggers")}',{id:data.id}),
+                destroyUrl:http_build_query('{:url("deletetriggers")}',{id:data.id}),
+                onDblClickRow: function (index, node) {
+                    grid = $(this);
+                    onOpen(node)
+                },
+                onRowContextMenu: function(e, rowIndex, rowData){
+                    grid = $(this);
+                    e.preventDefault();
+                    try {
+                        $('#leftMenu').menu('show', {
+                            left:e.pageX,
+                            top:e.pageY
+                        });
+                    }catch(e){}
+
+                }
+            });
+        }
+
+    }
+
+
+    function onOpen(node) {
+        node['tabs'] = grid[0].getAttribute("id");
+        var opts = {
+            href: editUrl,
+            width: 500,
+            data: node,
+            modal:false,
+            handler: function(result){
+                grid.datagrid('reload');
+            }
+        };
+        shadow.open(opts);
+    }
+
+
+
+    function onMenu(item) {
+        switch (item.name) {
+            case 'reload':
+                grid.edatagrid('reload');
+                break;
+            case 'add':
+                onOpen({});
+                break;
+            case 'delete':
+                onRemove();
+                break;
+
+        }
+
+    }
+    // 删除
+    function onRemove(title){
+        if(!empty(title)){
+            grid = $("#"+title)
+        }
+        var rows = grid.datagrid('getSelections');
+        console.log(rows);
+        var items = [];
+        for(var i = 0; i < rows.length; i++){
+            items.push(rows[i].id);
+        }
+        items = items.join(',');
+        if(empty(items)){
+            easyui.alert('请选择需要操作的选项！');
+            return false;
+        }
+        var gd = $.data(grid[0], 'datagrid');
+        easyui.confirm('请再次确认是否需要继续进行您的操作!', function(){
+            easyui.post(gd.options.destroyUrl, {id: items}, function(result){
+                try{
+                    if(!result.code){
+                        easyui.alert(result.msg);
+                    }
+                    grid.datagrid('reload');
+                }catch (e){}
+            });
+        });
+    }
+    //添加
+    function onAdd (title){
+        if(!empty(title)){
+            grid = $("#"+title)
+        }
+        onOpen({});
+    }
+
+</script>

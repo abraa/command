@@ -51,5 +51,21 @@ function removeFile($basePath){
     }
 }
 
+/**
+ * 求一个数字的最大单位表示的尺寸
+ */
+function calc($size, $digits=2){
+    if(empty($size)){
+        return null;
+    }
+    $unit= array('','K','M','G','T','P');
+    $base= 1024;
+    $i   = floor(log($size,$base));
+    $n   = count($unit);
+    if($i >= $n){
+        $i=$n-1;
+    }
+    return round($size/pow($base,$i),$digits).' '.$unit[$i] . 'B';
+}
 
 //TODO...
