@@ -79,5 +79,18 @@ class Config extends BaseLogic
         return true;
     }
 
+    /**
+     * 'CONFIG_TYPE_LIST','CONFIG_GROUP_LIST' 这2个不让删
+     */
+    public function _before_delete(){
+        $pk = $this->dbModel->getPk();
+        $ids = $this->dbModel->whereIn('name',['CONFIG_TYPE_LIST','CONFIG_GROUP_LIST'])->column($pk);
+        if(empty($ids)){
+            $ids = [];
+        }
+        $this->data[$pk] = explode(",",$this->data[$pk]);
+        $this->data[$pk] = implode(",",array_diff($this->data[$pk],$ids));
+
+    }
 
 }

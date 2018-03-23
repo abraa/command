@@ -11,7 +11,18 @@ class Index extends BaseController
 
     public function index()
     {
-        $this->layout(false);
+
+        $version = db()->query('select VERSION()');
+
+        $info = array(
+            'SERVER_SOFTWARE'=>PHP_OS.' '.$_SERVER["SERVER_SOFTWARE"],
+            'mysql_get_server_info'=>php_sapi_name(),
+            'MYSQL_VERSION' => !empty($version)?$version[0]['VERSION()']:'',
+            'upload_max_filesize'=> ini_get('upload_max_filesize'),
+            'max_execution_time'=>ini_get('max_execution_time').'秒',
+            'disk_free_space'=>round((@disk_free_space(".")/(1024*1024)),2).'M',
+        );
+        $this->assign('server_info',$info);
         return $this->fetch();
     }
 
@@ -53,5 +64,23 @@ class Index extends BaseController
     public function verify()
     {
         return captcha();
+    }
+
+    /**
+     * 显示日志
+     */
+    public function showLog(){
+        $log_name =input('log_name','','trim');
+        $remove = input('remove',0,'intval');
+        if(!empty($log_name) && file_exists(LOG_PATH . $log_name)){
+            $content = file_get_contents(LOG_PATH . $log_name);
+            if($remove > 0){
+                unlink(LOG_PATH . $log_name);
+            }
+            echo $content;
+        }else{
+            echo "文件不存在!";
+        }
+        exit;
     }
 }

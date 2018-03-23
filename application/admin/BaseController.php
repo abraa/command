@@ -202,5 +202,10 @@ class BaseController extends Controller{
         $data = $this->logic->select();
         return $data;
     }
+
+    public function _empty($name)
+    {
+        return  $this->fetch($name);
+    }
     //TODO...
 }

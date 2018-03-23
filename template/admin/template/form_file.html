@@ -1,0 +1,48 @@
+{include file='public/editor'}
+<form data-url="{:url('save')}" method="post" class="form">
+    <fieldset class="fixed">
+        <table>
+            <tr>
+                <th>文件名称：</th>
+                <td><input name="text" class="easyui-textbox" size="25" data-options="required:true"></td>
+            </tr>
+            <input type="hidden" name="id" value="">
+            <input type="hidden" name="path" value="">
+            <input type="hidden" name="type" value="file">
+        </table>
+        <div class="easyui-panel"  title="内容" data-options="closable:false,tabWidth:100" style="overflow:auto;padding:20px;">
+            <textarea name="content" style="width:95%; height:400px" id="content">{$content|default=''}</textarea>
+        </div>
+    </fieldset>
+    <script type="text/javascript">
+//        var content = $('#content').val();
+//        window.ueContent = UE.getEditor('content',{
+//            initialFrameHeight:640,
+//            initialFrameWidth:580,
+//            toolbars: [
+//                [
+//                    'source',
+//                    'preview', //预览
+//                    'cleardoc', //清空文档
+//                    'insertcode', //代码语言
+//                    'link', //超链接
+//                    'spechars', //特殊字符
+//                    'searchreplace', //查询替换
+//                    'fullscreen', //全屏
+//                    'edittip ', //编辑提示
+//
+//                ]
+//            ],
+//            sourceEditorFirst:true
+//        });
+//        window.ueContent.ready(function() {                            //ue编辑器赋值
+//            ueContent.setContent(content);
+//        });
+    </script>
+    <script type="text/javascript">
+        function setData(data){
+
+        }
+
+    </script>
+</form>

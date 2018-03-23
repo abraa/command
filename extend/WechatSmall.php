@@ -1,22 +1,20 @@
 <?php
- /**
- * ====================================
- * thinkphp5
- * ====================================
- * Author: 1002571
- * Date: 2018/1/29 11:09
- * ====================================
- * File: WechatSmall.php
- * ====================================
+/**
+ * 微信小程序接口
+ * Created by PhpStorm.
+ * User: Administrator
+ * Date: 2018/1/28
+ * Time: 20:36
  */
+
 
 namespace extend;
 
-
-class WechatSmall {
-    public static $token = NULL; // 填写的token
-    public static $app_id = NULL; // 小程序的app_id
-    public static $app_secret = NULL; // 小程序的app_secret
+class WechatSmall
+{
+    public static $token = NULL; // 公众平台填写的token
+    public static $app_id = NULL; // 公众平台的app_id
+    public static $app_secret = NULL; // 公众平台的app_secret
     public static $call_url = NULL; //回调地址
     public static $access_token = '';
     public static $sessionKey = '';
@@ -25,6 +23,89 @@ class WechatSmall {
     private static $data;               //postData数据
     private static $errCodeHandle = true;                 //是否进行errCode预处理
     private static $errCodeHandleList = [];               //不进行errCode预处理的errcode列表
+
+
+
+    /**
+     * 初始化赋值 token,app_id,app_secret
+     * @param array $params
+     */
+    public static function init($params=array()){
+        self::$token = isset($params['token']) ? $params['token'] : self::$token;
+        self::$app_id = isset($params['app_id']) ? $params['app_id'] : self::$app_id;
+        self::$app_secret = isset($params['app_secret']) ? $params['app_secret'] : self::$app_secret;
+    }
+    /**
+     * 加密后的字符串与$signature对比，标识该请求来源于微信
+     * @return bool
+     */
+    public static function checkSignature()
+    {
+        $signature = isset($_GET['signature'])?$_GET['signature']:null;
+        $timestamp = isset($_GET['timestamp'])?$_GET['timestamp']:null;
+        $nonce =  isset($_GET['nonce'])?$_GET['nonce']:null;
+        $tmpArr = array(self::$token, $timestamp, $nonce);
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = implode($tmpArr);
+        $tmpStr = sha1($tmpStr);
+        if ($tmpStr == $signature) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 根据code获取 session_key
+     *  "openid": "OPENID",
+    "session_key": "SESSIONKEY",
+    "unionid": "UNIONID"
+     * @param $code
+     * @return bool|mixed
+     */
+    public static function authorizationCode($code){
+        if (empty(self::$app_id)) return false;
+        $ret = Curl::get('https://api.weixin.qq.com/sns/jscode2session?appid='.self::$app_id.'&secret='.self::$app_secret.'&js_code='.$code.'&grant_type=authorization_code');
+        $_data = json_decode($ret, true);
+        return isset($_data['errcode']) ? false : $_data;
+
+    }
+
+
+    /**
+     * $encryptedData解密
+     * @param $encryptedData
+     * @param $iv
+     * @return bool|mixed
+     */
+    public static function decryptData($encryptedData, $iv)
+    {
+        if (strlen(self::$sessionKey) != 24) {
+            return false;
+        }
+        $aesKey=base64_decode(self::$sessionKey);
+
+
+        if (strlen($iv) != 24) {
+            return false;
+        }
+        $aesIV=base64_decode($iv);
+
+        $aesCipher=base64_decode($encryptedData);
+
+        $result=openssl_decrypt( $aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+
+        $dataObj=json_decode( $result ,true);
+        if( $dataObj  == NULL )
+        {
+            return false;
+        }
+        if( $dataObj['watermark']['appid'] != self::$app_id )
+        {
+            return false;
+        }
+        return $dataObj;
+    }
 
     /**
      * 获取access_token
@@ -77,8 +158,8 @@ class WechatSmall {
         if(!isset(self::$userInfo)){
             $ret = Curl::get('https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . self::getAccessToken() . '&openid=' . (!is_null($openid) ? $openid : self::$userOpenId) . '&lang=zh_CN');
             $ret = json_decode($ret, true);
-            if(isset($_data['errcode'])){
-                $ret =  self::errCodeHandle($_data['errcode']);
+            if(isset($ret['errcode'])){
+                $ret =  self::errCodeHandle($ret['errcode']);
                 if(empty($ret)) self::$userInfo = array();
             }else{
                 self::$userInfo = $ret;
@@ -173,9 +254,9 @@ class WechatSmall {
         return $url;
     }
 
-     /**
-      * Wechat错误逻辑预处理
-      */
+    /**
+     * Wechat错误逻辑预处理
+     */
     public static function errCodeHandle($errcode){
         if($errcode == 0) return true;                                  //0成功
         if(false === self::$errCodeHandle || in_array($errcode,self::$errCodeHandleList)){
@@ -195,5 +276,7 @@ class WechatSmall {
         }
         return false;
     }
-
 }
+
+
+

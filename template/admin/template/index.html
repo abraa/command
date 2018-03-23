@@ -2,7 +2,9 @@
     <table class="form">
         <tr>
             <td>
-               <a class="easyui-linkbutton" plain="true" onclick="onRemove()"><i class="fa fa-plus"></i> {$Think.lang.delete}</a>
+                <a class="easyui-linkbutton" plain="true" onclick="onRemove()"><i class="fa fa-plus"></i> {$Think.lang.delete}</a>
+                <a class="easyui-linkbutton" plain="true" onclick="onAdd('file')"><i class="fa fa-plus"></i> {$Think.lang.add}{$Think.lang.child}{$Think.lang.file}</a>
+                <a class="easyui-linkbutton" plain="true" onclick="onAdd('dir')"><i class="fa fa-plus"></i> {$Think.lang.add}{$Think.lang.child}{$Think.lang.dir}</a>
             </td>
         </tr>
     </table>
@@ -18,9 +20,10 @@
     </thead>
 </table>
 <div id="leftMenu" class="easyui-menu" data-options="onClick:onMenu">
-    <div data-options="name:'delete', iconCls:'icon-no'">{$Think.lang.delete}文件</div>
+    <div data-options="name:'delete', iconCls:'icon-no'">{$Think.lang.delete}{$Think.lang.file}</div>
     <div data-options="name:'reload',iconCls:'icon-save'">{$Think.lang.reload}{$Think.lang.list}</div>
-    <!--<div data-options="name:'add',iconCls:'fa fa-plus'">{$Think.lang.add}{$Think.lang.child}文件</div>-->
+    <div data-options="name:'addFile',iconCls:'fa fa-plus'">{$Think.lang.add}{$Think.lang.child}{$Think.lang.file}</div>
+    <div data-options="name:'addDir',iconCls:'fa fa-plus'">{$Think.lang.add}{$Think.lang.child}{$Think.lang.dir}</div>
 </div>
 <script type="text/javascript">
     var grid = $('#grid');
@@ -49,16 +52,22 @@
         });
     });
 
-    function onOpen(node) {
+    function onOpen(node,type) {
+        if(empty(type)){
+            var url =  http_build_query('{:url("form")}',{id:node.id});
+        }else{
+            var url =  http_build_query('{:url("form")}',{type:type});
+        }
         var opts = {
-            href: '/'+node.home,
-            width: 650
-//            data: node,
-//            handler: function(result){
-//                grid.treegrid('reload');
-//            }
+            href: url,
+            width: 650,
+            data: node,
+            modal:false,
+            handler: function(result){
+                grid.treegrid('reload');
+            }
         };
-        easyui.dialog(opts);
+        shadow.open(opts);
     }
 
     function onMenu(item) {
@@ -74,9 +83,14 @@
                     });
                 }
                 break;
-//            case 'add':
-//                onOpen();
-//                break;
+            case 'addDir':
+                var node = grid.treegrid('getSelected');
+                onOpen({path:node.path},'dir');
+                break;
+            case 'addFile':
+                var node = grid.treegrid('getSelected');
+                onOpen({path:node.path},'file');
+                break;
         }
 
     }
@@ -91,9 +105,18 @@
             easyui.alert('请选择需要删除的文件');
             return false;
         }
-        easyui.doAjax('{:url("delete")}', {id: items}, function(){
+        easyui.doAjax('{:url("delete")}', {path: items}, function(){
             grid.treegrid('reload');
         });
+    }
+    //添加子文件或目录
+    function onAdd(type){
+        var node = grid.treegrid('getSelected');
+        if (empty(node)) {
+            easyui.alert('请点击选择需要添加文件的父目录');
+            return false;
+        }
+        onOpen({path:node.path},type);
     }
 
 </script>

@@ -1,0 +1,180 @@
+<form id="master" method="post">
+    <fieldset class="fixed">
+        <table class="form container">
+
+        </table>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    var tab_form = $(".container");
+    var table_name = '{$Request.get.id}';
+    function setData(data) {
+        tab_form.empty();
+        switch (data.tabs){
+            case 'column':
+                _init_column(data);
+                break;
+            case 'index':
+                _init_index(data);
+                break;
+            case 'triggers':
+                _init_triggers(data);
+                break;
+
+        }
+    }
+
+    /**字段编辑*/
+    function _init_column(data){
+        appendTable('textbox','名称','name',data.name);
+        $('#name').textbox({
+            required:true
+        });
+        appendTable('textbox','类型','type',data.type);
+        $('#type').textbox({
+            required:true
+        });
+        appendTable('radio','允许空值(NULL)','is_null',data.is_null,[{text:'NOT NULL',value:"0"},{text:'NULL',value:"1"}]);
+        appendTable('textbox','默认值','default',data.default);
+        $('#default').textbox({ });
+        appendTable('textbox','注释','comment',data.comment);
+        $('#comment').textbox({ });
+        appendTable('hidden','Id','id',data.id);
+        $('#master').attr('data-url', http_build_query('{:url("savefield")}',{id:table_name}) )
+    }
+
+
+    /**索引编辑*/
+    function _init_index(data){
+        appendTable('textbox','名称','Key_name',data.Key_name);
+        $('#Key_name').textbox({
+            required:true
+        });
+        appendTable('textbox','索引字段','Column_name','');
+        $('#Column_name').textbox({
+            required:true
+        });
+        if(!empty(data.Column_name_arr)){
+            $('#Column_name').textbox('setValue',data.Column_name_arr.join(','));
+        }
+        appendTable('combobox','索引类型','Non_unique',"");
+        $('#Non_unique').combobox({
+            valueField:'id',
+            textField:'text',
+            data:[{
+                "id":1,
+                "text":"Normal",
+                "selected":true
+            },{
+                "id":0,
+                "text":"Unique"
+            }]
+        });
+        if(!empty(data.Non_unique)){
+            $('#Non_unique').combobox('setValue',data.Non_unique);
+        }
+        appendTable('combobox','索引方式','Index_type',"");
+        $('#Index_type').combobox({
+            valueField:'id',
+            textField:'text',
+            data:[{
+                "id":'BTREE',
+                "text":"BTREE",
+                "selected":true
+            },{
+                "id":'HASH',
+                "text":"HASH"
+            }]
+        });
+        if(!empty(data.Index_type)){
+            $('#Index_type').combobox('setValue',data.Index_type);
+        }
+
+        appendTable('hidden','Id','id',data.id);
+        $('#master').attr('data-url', http_build_query('{:url("saveindex")}',{id:table_name}) )
+    }
+
+    /**触发器编辑*/
+    function _init_triggers(data){
+        appendTable('textbox','名称','TRIGGER_NAME',data.TRIGGER_NAME);
+        $('#name').textbox({
+            required:true
+        });
+        appendTable('combobox','触发','ACTION_TIMING',"");
+        $('#ACTION_TIMING').combobox({
+            valueField:'id',
+            textField:'text',
+            data:[{
+                "id":'After',
+                "text":"After",
+                "selected":true
+            },{
+                "id":'Before',
+                "text":"Before"
+            }]
+        });
+        if(!empty(data.ACTION_TIMING)){
+            $('#ACTION_TIMING').combobox('setValue',data.ACTION_TIMING);
+        }
+        appendTable('combobox','操作','EVENT_MANIPULATION',"");
+        $('#EVENT_MANIPULATION').combobox({
+            valueField:'id',
+            textField:'text',
+            data:[{
+                "id":'UPDATE',
+                "text":"UPDATE"
+            },{
+                "id":'INSERT',
+                "text":"INSERT"
+            },{
+                "id":'DELETE',
+                "text":"DELETE"
+            }]
+        });
+        if(!empty(data.EVENT_MANIPULATION)){
+            $('#EVENT_MANIPULATION').combobox('setValue',data.EVENT_MANIPULATION);
+        }
+        appendTable('text','定义','ACTION_STATEMENT',data.ACTION_STATEMENT);
+        appendTable('hidden','Id','id',data.id);
+        $('#master').attr('data-url', http_build_query('{:url("savetriggers")}',{id:table_name}) )
+    }
+
+    //添加input type:easyui类型,label:label ,name:name, value:默认值,params:需要使用的参数根据类型不同值也不同
+    function appendTable(type,label,name,value,params){
+        switch (type){
+            case 'numberbox':
+            case "combobox":
+            case 'textbox':
+                    value = empty(value)?"":value;
+                    tab_form.append('<tr><th>'+label+'：</th><td><input name="'+name+'" id="'+name+'" type="text" value="'+value+'" ></td></tr>');
+                break;
+            case "hidden":
+                    value = empty(value)?"":value;
+                    tab_form.append('<input name="'+name+'" id="'+name+'" type="hidden" value="'+value+'" >');
+                break;
+            case "radio":
+                    value = empty(value) ? 0 : value;
+                    var str = '<tr> <th>'+label+'：</th><td>';
+                    for(var i in params){
+                        if(value == params[i]['value']){
+                            var checked = "checked=true";
+                        }else{
+                            var checked = "";
+                        }
+                        str += '<input type="radio" name="'+name+'" value="'+params[i]['value']+'" '+checked+'>'+params[i]['text']
+                    }
+                    str += '</td></tr>';
+                    tab_form.append(str);
+//                    $("input[name='"+name+"'][value="+value+"]").attr("checked",true);
+                break;
+            case "text":
+                    value = empty(value)?"":value;
+                    tab_form.append('<tr><th>'+label+'：</th><td><textarea name="'+name+'" id="'+name+'"  style="width:100%; height:400px" >'+value+'</textarea></td></tr>');
+                break;
+
+        }
+
+
+//
+    }
+</script>

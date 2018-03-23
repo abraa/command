@@ -22,14 +22,13 @@ class File extends BaseController
      * @return array|mixed
      */
     public function index(){
-
         if ($this->request->isAjax()) {
             $filepath = PUBLIC_PATH .'uploads';
             $id = input('id',null);
            if(!empty($id)){
-               $filepath = PUBLIC_PATH.str_replace('_','/',$id);
+               $filepath = PUBLIC_PATH.str_replace(config('SPLIT_FILE'),DS,$id);
            }
-            $data =  fileList($filepath);
+            $data =  listFile($filepath,PUBLIC_PATH,false);
             return $data;
         }
         return $this->fetch($this->template);
@@ -40,14 +39,29 @@ class File extends BaseController
      */
     public function delete()
     {
-        $path = input('path',null);
-        if(empty($path)){
+        $id = input('id',null);
+        if(empty($id)){
             $this->error('缺少参数');
         }
-        $files = explode('|',$path);
+        $files = explode('|',$id);
         foreach($files as $file){
-            fileRemove($file);
+            $file = PUBLIC_PATH.str_replace(config('SPLIT_FILE'),DS,$file);
+            removeFile($file);
         }
         $this->success('删除成功');
     }
+
+    /**
+     * 上传文件 返回文件路径
+     */
+    public function upload(){
+        LoginSupport::getUserId();  //检查用户是否登录
+        $res = UploadSupport::upload();
+        if(!$res){
+            $this->error('上传失败');
+        }else{
+            $this->success('上传成功','',$res);
+        }
+    }
+
 }
