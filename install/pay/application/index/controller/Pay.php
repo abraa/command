@@ -15,6 +15,7 @@ namespace app\index\controller;
 use aggregation\pay\AlipayPagePay;
 use aggregation\pay\Tenpay;
 use aggregation\pay\WeChatNative;
+use aggregation\pay\WeChatSmallPay;
 use app\index\BaseController;
 
 
@@ -195,7 +196,70 @@ class Pay extends BaseController{
             //验证通过
         }
     }
+
     public function index(){
         echo 1;
+    }
+
+    /**
+     * 微信小程序支付支付
+     */
+    public function wechatSmallPay(){
+        $openid = LoginSupport::getUserInfo('openid');
+        $openid = input('openid',$openid);          //openid需要小程序给
+        $product_id = input('product_id');
+        $product = model('level')->field('id,price,text')->where('id',$product_id)->find();
+        if(empty($product)){
+            $this->error('商品不存在');
+        }
+        $product = $product->toArray();
+        $total_fee = $product['price'];
+        $product_name =  $product['text'];
+        if(empty($openid) || empty($product_id) || empty($total_fee)){
+            $this->error('缺少参数');
+        }
+        $this->pay = new WeChatSmallPay();
+        $config = config('wechatsmall');
+        $config['notify_url'] = url('wechatNotify','',true,true);
+        $this->pay->init($config);
+        $data = ['body'=>$product_name,
+            'out_trade_no' =>   time().rand(1000,9999),            //商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。详见商户订单号
+            'total_fee' =>   $total_fee * 100,            //订单总金额，单位为分，详见支付金额
+            'product_id' =>   $product_id,            //产品id
+            'attach'    => '',
+        ];
+        try{
+            $order = $this->pay->getCode($data,$openid);         //模式二 统一下单
+            if($order['return_code'] != 'SUCCESS' || $order['result_code'] != 'SUCCESS'){
+                $this->error('微信下单失败','',$order);
+            }
+        }catch (\aggregation\lib\wechat\WxPayException $e){
+            $this->error('微信下单失败');
+        }
+        $this->logic->setData('price',$total_fee);
+        $this->logic->setData('product_name',$product_name);
+        $this->logic->setData('out_trade_no',$data['out_trade_no']);
+        if($this->logic->unifiedOrder($order)){
+            $result = $this->pay->setSign('prepay_id='.$order['prepay_id'], $order['nonce_str']);       //返回给小程序参数结果,需要进行二次签名
+            $this->success('下单成功','',$result);
+        }
+        $this->error('下单异常');
+    }
+
+    /**
+     *  微信小程序支付回调通知地址
+     */
+    public function wechatSmallNotify(){
+        $this->pay = new WeChatSmallPay();
+        $this->pay->init(config('wechatsmall'));
+        if($this->pay->verify()){         //验证通过
+            //TODO...
+            $result = Xml::inputXml();
+            if($result['return_code'] == "SUCCESS"){
+                $this->logic->setData($result);
+                $this->logic->wechatNotify();
+            }
+        }
+        $this->pay->notify();       //返回微信通知结果
     }
 }
