@@ -10,9 +10,10 @@
 // +----------------------------------------------------------------------
 
 return [
-    "app\\command\\Base",
-    "app\\command\\Region",
-    "app\\command\\Wechat",
-    "app\\command\\Install",
-    "app\\command\\User",
+    "app\\command\\Base",               //公共基础
+    "app\\command\\Region",             //地址
+    "app\\command\\Wechat",             //微信
+    "app\\command\\Install",            //安装 install下模块
+    "app\\command\\User",               //用户
+    "app\\command\\Swoole",             //swoole 服务器
 ];
