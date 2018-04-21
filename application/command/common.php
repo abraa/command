@@ -253,7 +253,7 @@ function user_md5($str, $key = ''){
 function copy_file($file_path,$root_path="",$path=""){
     if(is_dir($file_path)){                                      //如果是目录继续遍历
         if(makeDir(str_replace($path,$root_path,$file_path))){   //在root_path创建相同目录
-            $files  = glob($file_path .DS.'*');
+            $files  = glob($file_path .DIRECTORY_SEPARATOR.'*');
             foreach($files as $file){
                 copy_file($file,$root_path,$path);
             }

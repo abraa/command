@@ -26,7 +26,7 @@ class File extends BaseController
             $filepath = PUBLIC_PATH .'uploads';
             $id = input('id',null);
            if(!empty($id)){
-               $filepath = PUBLIC_PATH.str_replace(config('SPLIT_FILE'),DS,$id);
+               $filepath = PUBLIC_PATH.str_replace(config('SPLIT_FILE'),DIRECTORY_SEPARATOR,$id);
            }
             $data =  listFile($filepath,PUBLIC_PATH,false);
             return $data;
@@ -45,7 +45,7 @@ class File extends BaseController
         }
         $files = explode('|',$id);
         foreach($files as $file){
-            $file = PUBLIC_PATH.str_replace(config('SPLIT_FILE'),DS,$file);
+            $file = PUBLIC_PATH.str_replace(config('SPLIT_FILE'),DIRECTORY_SEPARATOR,$file);
             removeFile($file);
         }
         $this->success('删除成功');

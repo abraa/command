@@ -72,10 +72,10 @@ class Index extends BaseController
     public function showLog(){
         $log_name =input('log_name','','trim');
         $remove = input('remove',0,'intval');
-        if(!empty($log_name) && file_exists(LOG_PATH . $log_name)){
-            $content = file_get_contents(LOG_PATH . $log_name);
+        if(!empty($log_name) && file_exists(RUNTIME_PATH. 'log/' . $log_name)){
+            $content = file_get_contents(RUNTIME_PATH. 'log/' . $log_name);
             if($remove > 0){
-                unlink(LOG_PATH . $log_name);
+                unlink(RUNTIME_PATH. 'log/' . $log_name);
             }
             echo $content;
         }else{

@@ -17,9 +17,9 @@ use think\Controller;
 
 class BaseController extends Controller{
 
-    public function _initialize()
+    public function initialize()
     {
-        parent::_initialize();
+        parent::initialize();
     }
 
     //TODO...

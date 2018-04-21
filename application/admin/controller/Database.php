@@ -300,7 +300,7 @@ s;
 
         //检查目录是否存在并创建
         if(makeDir($path)){
-            $file_name = $path.DS.$database.'-'.date("Y-m-d",time()).'.sql';
+            $file_name = $path.DIRECTORY_SEPARATOR.$database.'-'.date("Y-m-d",time()).'.sql';
 
             // 检查文件是否存在
             if(file_exists($file_name)){
@@ -360,7 +360,7 @@ s;
         $tables = input('id');
         if(!empty($tables) && makeDir($path)){
             $tables = explode('|',$tables);
-            $file_name = $path . DS . $tables[0] . '-' . date("Y-m-d", time()) . '.sql';
+            $file_name = $path . DIRECTORY_SEPARATOR . $tables[0] . '-' . date("Y-m-d", time()) . '.sql';
             // 检查文件是否存在
             if(file_exists($file_name)){
                 $this->error("数据备份文件已存在！") ;

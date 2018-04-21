@@ -294,20 +294,20 @@ if (!function_exists('base64ToImage')) {
      */
     function base64ToImage($base , $path='' , $saveName='')
     {
-        $path or $path = ROOT_PATH . 'public' . DS . 'uploads';
+        $path or $path = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'uploads';
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base, $result)) {
             if(empty($saveName)){
                 $ext = empty($result[2]) ? 'jpg' : $result[2];
-                $saveName =  date('Ymd') .DS . md5(microtime(true)) . '.'. $ext;
+                $saveName =  date('Ymd') .DIRECTORY_SEPARATOR . md5(microtime(true)) . '.'. $ext;
             }
-            $fileName= $path . DS . ltrim($saveName,DS);
+            $fileName= $path . DIRECTORY_SEPARATOR . ltrim($saveName,DIRECTORY_SEPARATOR);
             if (!makeDir(dirname($fileName))) {
                 abort(500, '无法创建目录');
             }
             if(file_put_contents($fileName, base64_decode(str_replace($result[1], '', $base))) == false){
                abort(500, '无法创建文件');
             }
-            return str_replace("\\",'/',str_replace( ROOT_PATH . 'public','',$fileName));
+            return str_replace("\\",'/',str_replace( Env::get('root_path') . 'public','',$fileName));
         }else{
             return '';
         }
@@ -336,12 +336,12 @@ if(!function_exists('makeDir')){
             /* 如果目录不存在则尝试创建该目录 */
             @umask(0);
             //2. 检查是否有父目录
-            $parentpath =  substr($filepath,0,strrpos($filepath,DS));
+            $parentpath =  substr($filepath,0,strrpos($filepath,DIRECTORY_SEPARATOR));
             //3. 调用本身检查父目录是否存在
             $res = makeDir($parentpath);
             //4. 父目录存在则生成目录
             if($res){
-                if (@mkdir(rtrim($filepath, DS), 0755)) {
+                if (@mkdir(rtrim($filepath, DIRECTORY_SEPARATOR), 0755)) {
                     @chmod($filepath, 0755);
                     $reval = true;
                 }
@@ -373,7 +373,7 @@ if(!function_exists('writeFile')) {
         //2.判断文件是否存在
         if ($cover || !is_file($filename)) {
             //判断路径是否存在并创建
-            $filepath = substr($filename, 0, strrpos($filename, DS));
+            $filepath = substr($filename, 0, strrpos($filename, DIRECTORY_SEPARATOR));
             if (makeDir($filepath)) {
                 //3. 写入文件
                 return file_put_contents($filename, $content, $cover);

@@ -20,9 +20,9 @@ use app\common\support\ConfigSupport;
 
 class Config extends BaseController
 {
-    public function _initialize()
+    public function initialize()
     {
-        parent::_initialize();
+        parent::initialize();
         //校验权限
         $this->assign('groupList', ConfigSupport::getConfigGroup());
         $this->assign('typeList', ConfigSupport::getConfigType());

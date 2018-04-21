@@ -47,7 +47,7 @@ class BaseModel extends Model{
         if(empty($pageSize)){
             $data = $this->select();
             if (false !== $data) {
-                $data = collection($data)->toArray();
+                $data = $data->toArray();
             }
             $total = count($data);
         }else{

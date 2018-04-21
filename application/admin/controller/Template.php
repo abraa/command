@@ -14,6 +14,7 @@ namespace app\admin\controller;
 
 
 use app\admin\BaseController;
+use think\facade\Env;
 
 class Template extends BaseController{
 
@@ -23,12 +24,12 @@ class Template extends BaseController{
      */
     public function index(){
         if ($this->request->isAjax()) {
-            $filepath = ROOT_PATH .'template';
+            $filepath = Env::get('root_path') .'template';
             $id = input('id',null);
             if(!empty($id)){
-                $filepath = $filepath.str_replace(config('SPLIT_FILE'),DS,$id);
+                $filepath = $filepath.str_replace(config('SPLIT_FILE'),DIRECTORY_SEPARATOR,$id);
             }
-            $data =  listFile($filepath,ROOT_PATH .'template',true);
+            $data =  listFile($filepath,Env::get('root_path') .'template',true);
             return $data;
         }
         return $this->fetch($this->template);
@@ -50,8 +51,8 @@ class Template extends BaseController{
         }
         $id = input('id',null);         //有id根据id判断是文件还是目录(修改才会有id)
         if(!empty($id)){
-            $filepath = ROOT_PATH .'template';
-            $filepath = $filepath.str_replace(config('SPLIT_FILE'),DS,$id);
+            $filepath = Env::get('root_path') .'template';
+            $filepath = $filepath.str_replace(config('SPLIT_FILE'),DIRECTORY_SEPARATOR,$id);
             if(is_file($filepath)){
                 $template ="form_file";
                 $content = file_get_contents($filepath);
@@ -81,17 +82,17 @@ class Template extends BaseController{
             if(empty($name)){
                 $this->error('文件名不能为空!');
             }
-            $filepath = $path.DS.$name;                                         //新文件路径
+            $filepath = $path.DIRECTORY_SEPARATOR.$name;                                         //新文件路径
         }
         else{                      //修改
-            $filepath = ROOT_PATH .'template';
-            $filepath = $filepath.str_replace(config('SPLIT_FILE'),DS,$id);
+            $filepath = Env::get('root_path') .'template';
+            $filepath = $filepath.str_replace(config('SPLIT_FILE'),DIRECTORY_SEPARATOR,$id);
             if(!file_exists($filepath)){
                 $this->error('文件不存在!');
             }
             $oldfile = $filepath;               //旧文件名
-            $path = substr($filepath,0,strrpos($filepath,DS));              //取原文件目录
-            $filepath = $path.DS.$name;                                         //新文件路径
+            $path = substr($filepath,0,strrpos($filepath,DIRECTORY_SEPARATOR));              //取原文件目录
+            $filepath = $path.DIRECTORY_SEPARATOR.$name;                                         //新文件路径
             @rename($oldfile,$filepath);                                        //重命名
         }
         //保存文件
@@ -119,7 +120,7 @@ class Template extends BaseController{
         }
         $files = explode('|',$id);
         foreach($files as $file){
-            $file = ROOT_PATH .'template'.str_replace(config('SPLIT_FILE'),DS,$file);
+            $file = Env::get('root_path') .'template'.str_replace(config('SPLIT_FILE'),DIRECTORY_SEPARATOR,$file);
             removeFile($file);
         }
         $this->success('删除成功');

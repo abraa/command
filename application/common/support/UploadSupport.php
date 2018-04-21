@@ -13,6 +13,7 @@
 namespace app\common\support;
 
 
+use think\facade\Env;
 use think\File;
 
 class UploadSupport {
@@ -52,7 +53,7 @@ class UploadSupport {
     }
 
     protected static function uploadSave($file,$validate = []){
-        $uploadPath = ROOT_PATH . 'public' . DS . 'uploads';
+        $uploadPath = Env::get('root_path') . 'public' . DIRECTORY_SEPARATOR . 'uploads';
         if($file instanceof File){
             $info = $file->validate($validate)->move($uploadPath);
             if($info){

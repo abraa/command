@@ -134,9 +134,11 @@ class Power extends BaseLogic{
         $power = array_filter($power); //过滤空值
         $power = array_unique($power); //过滤重复的数据
         $this->setModel('menu');
-        $where = ['id' => ['IN', $power]];
-        $field = ['id', 'concat_ws("-", module, controller, method)' => 'power', 'module', 'controller', 'other_method'];
+        $where[] = ['id','IN', $power];
+        $field = ['id', 'concat_ws("-", module, controller, method) as power', 'module', 'controller', 'other_method'];
+
         $data = $this->dbModel->getAll($where, $field);
+
         $menu = [];
         if (!empty($data) && is_array($data)) {
             foreach ($data as $row) {

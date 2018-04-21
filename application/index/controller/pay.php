@@ -22,9 +22,9 @@ class Pay extends BaseController{
 
     protected $pay;
 
-    public function _initialize()
+    public function initialize()
     {
-        parent::_initialize();
+        parent::initialize();
     }
 
     /**

@@ -10,11 +10,11 @@
 function listFile($basePath,$rootPath,$showAll=false)
 {
     if(is_dir($basePath)){
-        $filelist = glob($basePath.DS."*");
+        $filelist = glob($basePath.DIRECTORY_SEPARATOR."*");
         $arr = [];
         foreach($filelist as $file){
             $result = [];
-            $result['text'] = str_replace($basePath.DS,"",$file);
+            $result['text'] = str_replace($basePath.DIRECTORY_SEPARATOR,"",$file);
             $result['path'] =$file;
             $result['home'] =str_replace("\\",'/',str_replace($rootPath,"",$file));
             $result['children'] =[];
@@ -43,7 +43,7 @@ function removeFile($basePath){
     if(is_file($basePath)){
         unlink($basePath);
     }else if(is_dir($basePath)){
-        $filelist = glob($basePath.DS."*");
+        $filelist = glob($basePath.DIRECTORY_SEPARATOR."*");
         foreach($filelist as $file){
             removeFile($file);
         }

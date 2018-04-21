@@ -56,9 +56,9 @@ class BaseController extends Controller{
      * @var array
      */
     protected $allow = ['login','logout','verify'];
-    public function _initialize()
+    public function initialize()
     {
-        parent::_initialize();
+        parent::initialize();
         //校验权限
         $this->access();
         $params = input();
